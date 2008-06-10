@@ -1,0 +1,12 @@
+<ul id="subnavigation">
+	<li class="first<% if params[:control] == 'contextmenu'%> active<% end %>"><%= link_to 'ContextMenu', control_url(:control => 'contextmenu') %></li>
+	<!--<li<% if params[:control] == 'pagination'%> class="active"<% end %>><%= link_to 'Pagination', control_url(:control => 'pagination') %></li>-->
+	<li<% if params[:control] == 'progressbar'%> class="active"<% end %>><%= link_to 'ProgressBar', control_url(:control => 'progressbar') %></li>
+	<li<% if params[:control] == 'rating'%> class="active"<% end %>><%= link_to 'Rating', control_url(:control => 'rating') %></li>
+	<li<% if params[:control] == 'scrollbar'%> class="active"<% end %>><%= link_to 'ScrollBar', control_url(:control => 'scrollbar') %></li>
+	<li<% if params[:control] == 'selectmultiple'%> class="active"<% end %>><%= link_to 'SelectMultiple', control_url(:control => 'selectmultiple') %></li>
+	<li<% if params[:control] == 'selection'%> class="active"<% end %>><%= link_to 'Selection', control_url(:control => 'selection') %></li>
+	<li<% if params[:control] == 'tabs'%> class="active"<% end %>><%= link_to 'Tabs', control_url(:control => 'tabs') %></li>
+	<li<% if params[:control] == 'textarea'%> class="active"<% end %>><%= link_to 'TextArea', control_url(:control => 'textarea') %></li>
+	<li<% if params[:control] == 'window'%> class="active"<% end %>><%= link_to 'Window', control_url(:control => 'window') %></li>
+</ul>

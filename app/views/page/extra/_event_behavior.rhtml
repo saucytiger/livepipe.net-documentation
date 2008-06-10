@@ -1,0 +1,419 @@
+<% vocabulary = capture do %>
+function selects(){
+	return $$('#font_picker select');
+}
+
+function paragraphs(){
+	return $$('#font_picker p');
+}
+
+//this builds a hash of styles that we can pass to Element.setStyle()
+function styles(){
+	return selects().inject({},function(styles,select){
+		styles[select.readAttribute('name').camelize()] = select.value;
+		return styles;
+	});
+}
+<% end %>
+
+<% initial_example = capture do %>
+with(Event.Behavior){
+    set_style(styles).on(paragraphs).when(selects).change();
+}
+<% end %>
+
+<% states_example = capture do %>
+with(Event.Behavior){
+    show('state_field').when('country').is('United States');
+    show('province_field').when('country').is('Canada');
+}
+<% end %>
+
+<% states_example_2 = capture do %>
+with(Event.Behavior){
+    show('postal_code_field').when('country_select').is('United States').or('Canada');
+}
+<% end %>
+
+<% object_event_integration = capture do %>
+var tabs = new Control.Tabs('tabs');
+
+function active_tab(){
+	return $('tab_select').value;
+}
+
+function set_tab_select(){
+	$A($('tab_select').options).each(function(option,i){
+		if(option.value == tabs.activeContainer.id)
+			$('tab_select').options.selectedIndex = i;
+	});
+}
+
+Object.extend(Control.Tabs.prototype,{
+	getValue: function(){
+		return this.activeContainer.id;
+	}
+});
+
+//mimic the DOM 'change' event
+Control.Tabs.observe('afterChange',function(tabs){
+	tabs.notify('change');
+});
+
+Event.Behavior.addVerbs({
+	setActiveTab: function(tabs,tab){
+		return tabs.setActiveTab((typeof(tab) == 'function' ? tab() : tab));
+	}
+});
+
+with(Event.Behavior){
+	set_active_tab(active_tab).on(tabs).when('tab_select').changes();
+	call(set_tab_select).when(tabs).change();
+}
+<% end %>
+
+<% paragraphs = capture do %>
+with(Event.Behavior){
+	add_class_name('black').to('paragraph').when('color_select').is('black');
+	add_class_name('red').to('paragraph').when('color_select').is('red');
+	add_class_name('green').to('paragraph').when('color_select').is('green');
+	add_class_name('blue').to('paragraph').when('color_select').is('blue');
+	add_class_name('bold').to('paragraph').when('weight_select').is('bold');
+	add_class_name('normal').to('paragraph').when('weight_select').is('normal');
+}
+<% end %>
+
+<% content_for :head do %>
+	<style>
+		div.label {
+			font-family:"Lucida Grande",Verdana;
+			color:#333;
+			font-size:11px;
+			font-weight:bold;
+		}
+
+		td {
+			font-size:13px;
+			color:#333;
+			font-family:"Lucida Grande",Verdana;
+			padding-top:7px;
+			padding-bottom:7px;
+			padding-right:10px;
+			border-bottom:1px solid #ccc;
+		}
+
+		thead td {
+			font-size:16px;
+			font-family:"Trebuchet MS";
+			font-weight:bold;
+			color:#666;
+		}
+
+		#main .demo .blue {
+			color:#009;
+		}
+
+		#main .demo .green {
+			color:#090;
+		}
+
+		#main .demo .red {
+			color:#900;
+		}
+
+		#main .demo .black {
+			color:#000;
+		}
+
+		#main .demo .normal {
+			font-weight:normal;
+		}
+
+		#main .demo .bold {
+			font-weight:bold;
+		}
+
+		#main .demo .large {
+			font-size:18px;
+		}
+
+		#main .demo .medium {
+			font-size:15px;
+		}
+
+		#main .demo .small {
+			font-size:11px;
+		}
+
+		#main .demo .arial {
+			font-family:arial;
+		}
+
+		#main .demo .times {
+			font-family:times;
+		}
+
+		#main .demo .verdana {
+			font-family:verdana;
+		}
+
+		#tabs_example ul.tabs {
+			list-style:none;
+			margin:0;
+			padding:0;
+			clear:both;
+			border-bottom:1px solid #ccc;
+			height:20px;
+		}
+
+		#tabs_example ul.tabs li {
+			float:left;
+			margin-right:5px;
+			width:50px;
+			text-align:center;
+		}
+
+		#tabs_example ul.tabs li a {
+			display:block;
+			height:20px;
+			padding:0 3px 0 3px;
+			background-color:#fff;
+			color:#666;
+		}
+
+		#tabs_example ul.tabs li a:hover {
+			color:#666;
+		}
+
+		#tabs_example ul.tabs li a.active {
+			background-color:#ddd;
+		}
+
+		#tabs_example div {
+			clear:both;
+		}
+
+		select {
+			margin-right:5px;
+		}
+
+		.float_margin {
+			 margin-top:50px;
+		}
+	</style>
+	<!--[if IE]><style>.float_margin{margin-top:0;} .first_demo_paragraph{margin-top:35px;}</style><![endif]-->
+	<script>
+		document.observe('dom:loaded',function(){
+			<%= vocabulary %>						
+			<%= states_example %>
+			<%= states_example_2 %>
+			<%= initial_example %>
+			<%= paragraphs %>
+			<%= object_event_integration %>
+		});
+	</script>
+<% end %>
+
+<%= header 'Event.Behavior' %>
+<%= introduction 'Natural language event programming for Prototype.' %>
+
+<% subhead do %><span><a href="http://github.com/saucytiger/livepipe-ui/tree/master/src/event_behavior.js" style="float:right; font-size:11px; font-family:Verdana;">Source</a></span>Introduction<% end %>
+<% paragraph do %>This library is inspired by Adam McCrea's <a href="http://www.adamlogic.com/2007/03/20/3_metaprogramming-javascript-presentation">MetaProgramming Javascript Presentation</a>. It is mainly an experiment in meta-programming, I intend to apply the research towards a more practical extension to Prototype at some point in the future.<% end %>
+<%= subhead 'In Action' %>
+<% javascript do %><%= initial_example %><% end %>
+<div id="font_picker" class="demo">
+	<div style="float:left;">
+		<div class="label">Size</div>
+		<select name="font-size">
+			<option value="11px">Small</option>
+			<option value="15px">Medium</option>
+			<option value="18px">Large</option>
+		</select>
+	</div>
+	<div style="float:left;">
+		<div class="label">Color</div>
+		<select name="color">
+			<option value="#000">Black</option>
+			<option value="#900">Red</option>
+			<option value="#090">Green</option>
+			<option value="#009">Blue</option>
+		</select>
+	</div>
+	<div style="float:left;">
+		<div class="label">Weight</div>
+		<select name="font-weight">
+			<option value="normal">Normal</option>
+			<option value="bold">Bold</option>
+		</select>
+	</div>
+	<div style="float:left;">
+		<div class="label">Font</div>
+		<select name="font-family">
+			<option value="arial">Arial</option>
+			<option value="times">Times</option>
+			<option value="verdana">Verdana</option>
+		</select>
+	</div>
+	<br style="clear:both;"/>
+	<p class="first_demo_paragraph">By changing any of the select boxes above, the styles on these paragraphs will change.</p>
+	<p>The code above is real, and if you read on, you'll learn why it works.</p>
+</div>
+<%= subhead 'Starting Simple' %>
+<% javascript do %><%= states_example %><% end %>
+<div style="float:left;">
+	<div class="label">Country</div>
+	<select id="country">
+		<option>United States</option>
+		<option>Canada</option>
+		<option>Luxembourg</option>
+	</select>
+</div>
+<div style="float:left;" id="state_field">
+	<div class="label">State</div>
+	<select id="state">
+		<option>Ohio</option>
+		<option>Michigan</option>
+		<option>Kentucky</option>
+	</select>
+</div>
+<div style="float:left;" id="province_field">
+	<div class="label">Province</div>
+	<select id="Province">
+		<option>British Columbia</option>
+		<option>Ontario</option>
+		<option>Saskatchewan</option>
+	</select>
+</div>
+<h3 style="clear:both;" class="float_margin">Basic Sentance Construction</h3>
+<% paragraph do %>The basic rule is: one verb construct, followed by when(), followed by at least one event or condition. If no events are specified, changes() is implicit.<% end %>
+<table cellpadding="0" cellspacing="0" width="100%">
+	<thead>
+		<tr><td>Verbs</td><td>Nouns</td><td>Events</td><td>Conditions</td></tr>
+	</thead>
+	<tbody>
+		<tr><td><b>show</b>(element)</td><td><b>when</b>(element)</td><td><b>changes</b>()</td><td><b>is</b>(value)</td></tr>
+		<tr><td><b>hide</b>(element)</td><td>&nbsp;</td><td><b>loses_focus</b>()</td><td><b>is_not</b>(value)</td></tr>
+		<tr><td><b>add_class_name</b>(class_name).<b>on</b>(element)</td><td>&nbsp;</td><td><b>gains_focus</b>()</td><td><b>contains</b>(value)</td></tr>
+		<tr><td><b>remove_class_name</b>(class_name).<b>on</b>(element)</td><td>&nbsp;</td><td><b>is_clicked</b>()</td><td>&nbsp;</td></tr>
+		<tr><td><b>set_class_name</b>(class_name).<b>on</b>(element)</td><td>&nbsp;</td><td><b>is_double_clicked</b>()</td><td>&nbsp;</td></tr>
+		<tr><td><b>set_style</b>(styles).<b>on</b>(element)</td><td>&nbsp;</td><td><b>key_pressed</b>()</td><td>&nbsp;</td></tr>
+		<tr><td><b>remove</b>(element)</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+		<tr><td><b>update</b>(element).<b>_with</b>(content)</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+		<tr><td><b>replace</b>(element).<b>_with</b>(content)</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+		<tr><td><b>call</b>(function)</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+	</tbody>
+</table>
+<% paragraph do %>You can use any of the constructs in any of the columns above to construct a sentance. Below is a simpler version of the font picker.<% end %>
+<% javascript do %><%= paragraphs %><% end %>
+<div style="float:left;">
+	<div class="label">Color</div>
+	<select id="color_select">
+		<option>black</option>
+		<option>red</option>
+		<option>green</option>
+		<option>blue</option>
+	</select>
+</div>
+<div style="float:left;">
+	<div class="label">Weight</div>
+	<select id="weight_select">
+		<option>normal</option>
+		<option>bold</option>
+	</select>
+</div>
+<div class="demo float_margin" style="clear:both;">
+	<p id="paragraph">When you change one of the selects above, the styles of this paragraph will change.</p>
+</div>
+<% paragraph 'Construcing Sentances With Functions' do %>The above example describes what is actually happening very well, but it won't scale as we add selects and paragraphs. To accommodate this, virtually very word can accept a function instead of a scalar argument. The table below shows the return type from any functions you define.<% end %>
+<table cellpadding="0" cellspacing="0" width="100%">
+	<thead>
+		<tr><td>Verbs</td><td>Nouns</td><td>Events</td><td>Conditions</td></tr>
+	</thead>
+	<tbody>
+		<tr><td><b>show</b>(array)</td><td><b>when</b>(array)</td><td><b>changes</b>()</td><td><b>is</b>(boolean)</td></tr>
+		<tr><td><b>hide</b>(array)</td><td>&nbsp;</td><td><b>loses_focus</b>()</td><td><b>is_not</b>(boolean)</td></tr>
+		<tr><td><b>add_class_name</b>(string).<b>on</b>(array)</td><td>&nbsp;</td><td><b>gains_focus</b>()</td><td><b>contains</b>(boolean)</td></tr>
+		<tr><td><b>remove_class_name</b>(string).<b>on</b>(array)</td><td>&nbsp;</td><td><b>is_clicked</b>()</td><td><b>&nbsp;</td></tr>
+		<tr><td><b>set_class_name</b>(string).<b>on</b>(array)</td><td>&nbsp;</td><td><b>is_double_clicked</b>()</td><td>&nbsp;</td></tr>
+		<tr><td><b>set_style</b>(hash).<b>on</b>(array)</td><td>&nbsp;</td><td><b>key_pressed</b>()</td><td>&nbsp;</td></tr>
+		<tr><td><b>remove</b>(array)</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+		<tr><td><b>update</b>(array).<b>_with</b>(string)</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+		<tr><td><b>replace</b>(array).<b>_with</b>(string)</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+		<tr><td><b>call</b>(null)</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+	</tbody>
+</table>
+<% paragraph do %>Note that call() always expects a function, and will call it. The function you pass in doesn't need to return anything.<% end %>
+<% paragraph do %>To demonstrate the construction of sentances with functions, the full code behind the example at the top of the page was:<% end %>
+<% javascript do %><%= vocabulary %>
+<%= initial_example %><% end %>
+
+<%= subhead 'and(), or() - Multiple Events &amp; Conditions' %>
+<% javascript do %><%= states_example_2 %><% end %>
+<div style="float:left;">
+	<div class="label">Country</div>
+	<select id="country_select">
+		<option>United States</option>
+		<option>Canada</option>
+		<option>Luxembourg</option>
+	</select>
+</div>
+<div style="float:left;" id="postal_code_field">
+	<div class="label">Postal Code</div>
+	<input type="text"/>
+</div>
+<br style="clear:both;"/>
+<% paragraph do %>You can join together multiple events and conditions using <b>and</b>(), <b>or</b>(). <b>Verbs cannot be chained together, use call() for complex functionality.</b> When joining together conditions <b>and</b>(), <b>or</b>() also act as the last condition you specified. The following are just some ideas:<% end %>
+<ul>
+	<li>call(function).when(element).is('a').or().is('b')</li>
+	<li>call(function).when(element).is('a').or('b').and().is_not('c')</li>
+	<li>call(function).when(element).changes().and().is('red')</li>
+	<li>remove_class_name(class_name).from(element).when(other_element).is_clicked().or().is_double_clicked()</li>
+</ul>
+
+<% paragraph 'Method Aliases' do %>To help make things look a little more natural, several methods are aliased. Public methods that contain multiple words exist in both camelCased and under_score form.<% end %>
+<ul>
+	<li><b>include</b> &rarr; <b>contains</b></li>
+	<li><b>includes</b> &rarr; <b>contains</b></li>
+	<li><b>are</b> &rarr; <b>is</b></li>
+	<li><b>are_not</b> &rarr; <b>is_not</b></li>
+	<li><b>change</b> &rarr; <b>changes</b></li>
+</ul>
+<% paragraph do %>A few methods require two words to construct the verb portion of the sentence, "<b>set_class_name(name).on(element)</b>" for example. The following are all interchangeable:<% end %>
+<ul>
+	<li><b>to</b></li>
+	<li><b>from</b></li>
+	<li><b>on</b></li>
+	<li><b>of</b></li>
+	<li><b>_with</b></li>
+</ul>
+<% paragraph do %>So <b>add_class_name(class_name).to(element)</b> and <b>remove_class_name(class_name).from(element)</b> both work.<% end %>
+<% paragraph 'Connecting Custom Objects &amp; Classes - Add Your Own Verbs' do %>The example below uses <%= link_to 'Control.Tabs', control_tabs_url %>, <%= link_to 'Object.Event', core_url %>. Below a tabs instance is linked up to a select box, and visa versa. Although the example given is fairly verbose and complex, in practical usage, much of the code is highly reusable.<% end %>
+<div class="label">Tab Select</div>
+<select id="tab_select" style="margin-bottom:10px;">
+	<option value="one">One</option>
+	<option value="two">Two</option>
+	<option value="three">Three</option>
+</select>
+<div id="tabs_example">
+	<ul id="tabs" class="tabs">
+		<li><a href="#one">One</a></li>
+		<li><a href="#two">Two</a></li>
+		<li><a href="#three">Three</a></li>
+	</ul>
+	<div id="one">
+		<p>I am tab one. I belong to group one.</p>
+	</div>
+	<div id="two">
+		<p>I am tab two. I belong to group one.</p>
+	</div>
+	<div id="three">
+		<p>I am tab three. I belong to group one.</p>
+	</div>
+</div>
+<% javascript do %><%= object_event_integration %><% end %>
+<h3>Adding Custom Events</h3>
+<% javascript do %>
+Event.Behavior.addEvents({
+    isReset: 'reset' //available as is_reset()
+});
+<% end %>

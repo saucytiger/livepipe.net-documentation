@@ -1,0 +1,198 @@
+<% context_menu_js = capture do %>
+	var context_menu_one = new Control.ContextMenu('container_one');
+	context_menu_one.addItem({
+		label: 'Left Image, Item 1',
+		callback: function(){
+			log('Left Image, item one picked.');
+		}
+	});
+	context_menu_one.addItem({
+		label: 'Left Image, Item 2',
+		callback: function(){
+			log('Left Image, item two picked.');
+		}
+	});
+	
+	var context_menu_two = new Control.ContextMenu('container_two',{
+		leftClick: true
+	});
+	context_menu_two.addItem({
+		label: 'Right Image, Item 1',
+		callback: function(){
+			log('Right Image, item one picked.');
+		}
+	});
+	context_menu_two.addItem({
+		label: 'Right Image, Item 2',
+		callback: function(){
+			log('Right Image, item two picked.');
+		}
+	});
+	context_menu_two.addItem({
+		label: function(){
+			//return value can be modified to reflect application state
+			return 'Right Image, Item 3';
+		},
+		condition: function(){
+			return $('show_third_item').checked;
+		},
+		callback: function(){
+			log('Right Image, item three picked.');
+		}
+	});
+	
+<% end %>
+<% context_menu_css = capture do %>
+	#control_contextmenu {
+		border:1px solid #666;
+		background-color:#eee;
+		min-width:150px;
+	}
+
+	#control_contextmenu ul {
+		list-style:none;
+		padding:0;
+		margin:0;
+		cursor:hand;
+	}
+
+	#control_contextmenu ul li {
+		text-align:left;
+		padding:3px 10px 3px 5px;
+		margin:0;
+		cursor:pointer;
+		cursor:hand;
+		font-family:"Lucida Grande",Verdana;
+		text-decoration:none;
+		color:#333;
+		font-size:12px;
+		font-weight:bold;
+		border-top:1px solid #fff;
+		border-left:1px solid #fff;
+		border-bottom:1px solid #999;
+		border-right:1px solid #999;
+	}
+
+	#control_contextmenu ul li.selected,
+	#control_contextmenu ul li:hover {
+		color:#fff;
+		background-color:#3875d7;
+		cursor:hand;
+	}
+
+	#control_contextmenu ul li.selected:hover {
+		color:#333;
+		background-color:#eee;
+		cursor:hand;
+	}
+<% end %>
+
+<% content_for :head do %>
+	<style>
+		<%= context_menu_css %>
+		
+		#text_console {
+			width:100%;
+			height:75px;
+		}
+		
+		#sample_menus p {
+			margin-bottom:3px;
+			margin-top:3px;
+			font-weight:bold;
+		}
+		
+		#sample_menus img {
+			border:1px solid #ccc;
+			padding:3px;
+		}
+	</style>
+	<script>
+		document.observe('dom:loaded',function(){
+			//on page console
+			var console_element = $('text_console');
+			var log = function(text){
+				console_element.innerHTML += text + '\n';
+			};
+			$('console_clear').observe('click',function(event){
+				console_element.innerHTML = '';
+				event.stop();
+			});
+			
+			<%= context_menu_js %>
+		});
+	</script>
+<% end %>
+
+<%= header 'Control.ContextMenu' %>
+<%= introduction 'Contextual menus for Prototype.' %>
+
+<% tabs 'main_tabs' do |tabs| %>
+	<% tabs.tab 'tutorial', 'Tutorial' %>
+	<% tabs.tab 'api', 'API' %>
+	<% tabs.source 'http://github.com/saucytiger/livepipe-ui/tree/master/src/contextmenu.js' %>
+<% end %>
+
+<% section 'tutorial' do %>	
+	<% paragraph 'Introduction' do %>Control.ContextMenu provides a simple API for programming contextual menus with Prototype. You can attach a context menu to the entire document or any Element. Menus can be triggered via a right click (default), or left click.<% end %>
+
+	<table cellpadding="0" cellspacing="0" border="0" id="sample_menus" width="100%">
+		<tr>
+			<td valign="top"><p>Right Click on Image</p><img src="/stylesheets/context_menu_1.jpg" id="container_one"/></td>
+			<td align="right"><p>Left Click on Image</p><img src="/stylesheets/context_menu_2.jpg" id="container_two"/><br/><p>Show third menu item? <input id="show_third_item" type="checkbox"/></p></td>
+		</tr>
+	</table>
+	
+	<%= subhead 'Console<span><a href="#" id="console_clear">clear</a></span>', :border => false %>
+	<textarea id="text_console" readonly="true"></textarea>
+	
+	<% paragraph 'Adding Context: Conditional Menu Items &amp; Labels' do %>You can modify the contents of the <b>label</b> by passing a function that returns a string into the label option instead of string. This function will be called each time the menu is opened. An optional <b>condition</b> function option can be used as well. If this condition returns false, the menu item will not appear in the menu. If no items meet the condition checks, the menu will not open.<% end %>
+	
+	<% javascript 'JavaScript' do %><%= context_menu_js %><% end %>
+	
+	<% css 'CSS' do %><%= context_menu_css %><% end %>
+<% end %>
+
+<% section 'api' do %>
+	<% paragraph 'DOM Modifications' do %><b>Control.ContextMenu.load()</b> will insert a <b>div#control_contextmenu</b> as a child of document.body.<% end %>
+	<% api_table 'Class' do |api| %>
+		<% api.item :returns => 'null', :signature => 'load([bool capture_all])', :description => 'capture_all defaults to false, and will stop all context menu events if true. If you want to capture_all you must explicitly call load before creating any Control.ContextMenu instances.' %>
+		<% api.item :returns => 'null', :signature => 'enable()', :description => 'Called by load()' %>
+		<% api.item :returns => 'null', :signature => 'disable()', :description => '' %>
+		<% api.item :returns => 'array', :signature => 'menus', :description => '' %>
+		<% api.item :returns => 'mixed', :signature => 'current', :description => 'Returns false or open Control.ContextMenu instance.' %>
+		<% api.item :returns => 'bool', :signature => 'enabled', :description => '' %>
+		<% api.item :returns => 'number', :signature => 'offset', :description => 'Defaults to 4. How many pixels from the edge of the screen the menu can be positioned.' %>
+	<% end %>
+	<% api_table 'Instance' do |api| %>
+		<% api.item :returns => 'Control.ContextMenu', :signature => 'initialize(Element container [,Hash options])', :description => 'container is the element that the ContextMenu is attached to.' %>
+		<% api.item :returns => 'null', :signature => 'addItem(Hash item)', :description => 'See <a href="#item_hash">Item Hash</a> below.' %>
+		<% api.item :returns => 'bool', :signature => 'open(Event)', :description => 'To manually open the menu you must pass a mouse event.' %>
+		<% api.item :returns => 'bool', :signature => 'close([Event])', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'destroy()', :description => '' %>
+	<% end %>
+	<% section 'item_hash' do %>
+		<% api_table 'Item Hash Structure','Type','Key','Description' do |api| %>
+			<% api.item :type => 'string', :key => 'label', :description => 'Text that will appear in the menu.' %>
+			<% api.item :type => 'function', :key => 'callback', :description => 'Will be called when the menu item is selected.' %>
+			<% api.item :type => 'function', :key => 'condition', :description => 'Optional condition that will be called each time the menu is opened to see if the item will be included in the menu.' %>
+		<% end %>
+	<% end %>
+	<% options_table 'Options' do |options| %>
+		<% options.item :type => 'bool', :name => 'leftClick', :default => 'false', :description => 'Will open the context menu with a left click, instead of right click.' %>
+		<% options.item :type => 'bool', :name => 'disableOnShiftKey', :default => 'true', :description => 'Allows browser context menu to open if shift key is pressed.' %>
+		<% options.item :type => 'bool', :name => 'disableOnAltKey', :default => 'true', :description => 'Allows browser context menu to open if alt key is pressed.' %>
+		<% options.item :type => 'string', :name => 'selectedClassName', :default => "'selected'", :description => '' %>
+		<% options.item :type => 'string', :name => 'activatedClassName', :default => "'activated'", :description => 'Added to the menu item once it has been selected, not toggled during animation.' %>		
+		<% options.item :type => 'bool', :name => 'animation', :default => 'true', :description => 'Toggles selectedClassName animationCycles * 2 times over animationLength.' %>
+		<% options.item :type => 'number', :name => 'animationCycles', :default => '2', :description => '' %>
+		<% options.item :type => 'number', :name => 'animationLength', :default => '300', :description => 'Length of animationCycles combined in milliseconds.' %>
+		<% options.item :type => 'bool', :name => 'delayCallback', :default => 'true', :description => 'Wether to call the callback immediately, or after the animation is complete.' %>
+	<% end %>
+	<% events_table 'Events' do |events| %>
+		<% events.item :signature => 'beforeOpen()', :description => 'Throwing $break inside an observer will prevent the menu from opening.' %>
+		<% events.item :signature => 'afterOpen()', :description => '' %>
+		<% events.item :signature => 'beforeClose()', :description => 'Throwing $break inside an observer will prevent the menu from closing.' %>
+		<% events.item :signature => 'afterClose()', :description => '' %>
+	<% end %>
+<% end %>

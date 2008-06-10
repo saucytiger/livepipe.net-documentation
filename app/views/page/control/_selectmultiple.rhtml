@@ -1,0 +1,253 @@
+<% selectmultiple_js = capture do %>
+	//this is for the simple example
+	new Control.SelectMultiple('select_multiple_one','select_multiple_options_one',{
+		//afterChange is completely optional, we just use it to show the viewer what the value of the select is in this case
+		afterChange: function(value){
+			$('select_multiple_one_value').value = value;
+		}
+	});
+	
+	//complex example, note how we need to pass in different CSS selectors because of the complex HTML structure
+	var select_multiple_two = new Control.SelectMultiple('select_multiple_two','select_multiple_two_options',{
+		checkboxSelector: 'table.select_multiple_table tr td input[type=checkbox]',
+		nameSelector: 'table.select_multiple_table tr td.select_multiple_name',
+		afterChange: function(){
+			if(select_multiple_two && select_multiple_two.setSelectedRows)
+				select_multiple_two.setSelectedRows();
+		}
+	});
+	
+	//adds and removes highlighting from table rows
+	select_multiple_two.setSelectedRows = function(){
+		this.checkboxes.each(function(checkbox){
+			var tr = $(checkbox.parentNode.parentNode);
+			tr.removeClassName('selected');
+			if(checkbox.checked)
+				tr.addClassName('selected');
+		});
+	}.bind(select_multiple_two);
+	select_multiple_two.checkboxes.each(function(checkbox){
+		$(checkbox).observe('click',select_multiple_two.setSelectedRows);
+	});
+	select_multiple_two.setSelectedRows();
+	
+	//link open and closing
+	$('select_multiple_two_open').observe('click',function(event){
+		$(this.select).style.visibility = 'hidden';
+		new Effect.BlindDown(this.container,{
+			duration: 0.3
+		});
+		Event.stop(event);
+		return false;
+	}.bindAsEventListener(select_multiple_two));
+	$('select_multiple_two_close').observe('click',function(event){
+		$(this.select).style.visibility = 'visible';
+		new Effect.BlindUp(this.container,{
+			duration: 0.3
+		});
+		Event.stop(event);
+		return false;
+	}.bindAsEventListener(select_multiple_two));		
+<% end %>
+
+<% simple_example = capture do %>
+	<!-- Simple example HTML -->
+	<select id="select_multiple_one">
+		<option value="1">One</option>
+		<option value="2">Two</option>
+		<option value="3">Three</option>
+	</select>
+	<span id="select_multiple_options_one">
+		<input type="checkbox" value="1"/><span class="name">One</span>
+		<input type="checkbox" value="2"/><span class="name">Two</span>
+		<input type="checkbox" value="3"/><span class="name">Three</span>
+	</span>
+	<b>Value in Form:</b> <input readonly="true" type="text" id="select_multiple_one_value"/>
+<% end %>
+
+<% complex_example = capture do %>
+	<!-- Complex example HTML -->
+	<div id="select_two_container">
+		<select id="select_multiple_two">
+			<option value="tigers">Tigers</option>
+			<option value="lions">Lions</option>
+			<option value="kitties">Kitties</option>
+			<option value="lygers">Lygers</option>
+			<option value="pumas">Pumas</option>
+			<option value="cheetahs">Cheetahs</option>
+		</select>
+		<a href="" id="select_multiple_two_open">Select Multiple</a>
+		<div style="display:none;" id="select_multiple_two_options" class="select_multiple_container">
+			<div class="select_multiple_header">Select Multiple Felines</div>
+			<table cellspacing="0" cellpadding="0" class="select_multiple_table" width="100%">
+				<tr class="odd">
+					<td class="select_multiple_name">Tigers</td>
+					<td class="select_multiple_checkbox"><input type="checkbox" value="tigers"/></td>
+				</tr>
+				<tr class="even">
+					<td class="select_multiple_name">Lions</td>
+					<td class="select_multiple_checkbox"><input type="checkbox" value="lions"/></td>
+				</tr>
+				<tr class="odd">
+					<td class="select_multiple_name">Kitties</td>
+					<td class="select_multiple_checkbox"><input type="checkbox" value="kitties"/></td>
+				</tr>
+				<tr class="even">
+					<td class="select_multiple_name">Lygers</td>
+					<td class="select_multiple_checkbox"><input type="checkbox" value="lygers"/></td>
+				</tr>
+				<tr class="odd">
+					<td class="select_multiple_name">Pumas</td>
+					<td class="select_multiple_checkbox"><input type="checkbox" value="pumas"/></td>
+				</tr>
+				<tr class="even">
+					<td class="select_multiple_name">Cheetahs</td>
+					<td class="select_multiple_checkbox"><input type="checkbox" value="cheetahs"/></td>
+				</tr>
+			</table>
+			<div class="select_multiple_submit"><input type="button" value="Done" id="select_multiple_two_close"/></div>
+		</div>
+	</div>
+<% end %>
+
+<% selectmultiple_css = capture do %>
+	/* CSS is mostly for the complex example */
+	
+	#select_multiple_one,
+	#select_multiple_two {
+		width:200px;
+	}
+	
+	#select_two_container {
+		position:relative;
+	}
+	
+	.select_multiple_submit {
+		background-image:url("/stylesheets/popup_footer.gif");
+		background-image:top center;
+		background-repeat:repeat-x;
+		padding:10px;
+		height:22px;
+		text-align:right;
+	}
+
+	.select_multiple_label {
+		margin-left:5px;
+		font-family:"Lucida Grande",Verdana;
+		font-size:11px;
+	}
+
+	.select_multiple_container {
+		width:300px;
+		position:absolute;
+		top:0;
+		left:0;
+		z-index:500;
+		border:1px solid #222;
+		border-top:none;
+	}
+
+	.select_multiple_container .select_multiple_header {
+		background-image:url("/stylesheets/black_background.gif");
+		background-repeat:repeat-x;
+		background-position:top center;
+		color:#eee;
+		font-family:"Lucida Grande",Verdana;
+		font-weight:bold;
+		font-size:12px;
+		margin:0;
+		padding:7px 0 8px 10px;
+		background-color:#000;
+	}
+	
+	table.select_multiple_table td {
+		height:27px;
+		border-bottom:1px solid #ddd;
+		font-family:"Lucida Grande",Verdana;
+		color:#333;
+		font-size:11px;
+	}
+	
+	table.select_multiple_table tr.even {
+		background-color:#FCFCFC;
+	}
+
+	table.select_multiple_table tr.odd {
+		background-color:#F7F7F7;
+	}
+	
+	table.select_multiple_table tr.selected {
+		background-image:none;
+		background-color:#D9E9FE;
+	}
+	
+	.select_multiple_name {
+		padding-left:15px;
+		font-weight:bold;
+	}
+	
+	.select_multiple_checkbox {
+		text-align:right;
+	}
+	
+	.select_multiple_checkbox input {
+		margin-right:15px;
+	}
+<% end %>
+
+<% content_for :head do %>
+	<style>
+		<%= selectmultiple_css %>
+	</style>
+	<script>
+		document.observe('dom:loaded',function(){
+			<%= selectmultiple_js %>
+		});
+	</script>
+<% end %>
+
+<%= header 'Control.SelectMultiple' %>
+<%= introduction 'Unobtrusive select multiple input alternative for Prototype.' %>
+
+<% tabs 'main_tabs' do |tabs| %>
+	<% tabs.tab 'tutorial', 'Tutorial' %>
+	<% tabs.tab 'api', 'API' %>
+	<% tabs.source 'http://github.com/saucytiger/livepipe-ui/tree/master/src/selectmultiple.js' %>
+<% end %>
+
+<% section 'tutorial' do %>
+	<h3>Introduction</h3>
+	<p>This control uses a combination of a standard select input, and a collection of checkbox inputs to create an alternative to the standard select multiple control. It's primary benefit besides a vastly improved experience for selecting multiple items is that for single item selection, it behaves like a normal select input.</p>
+	<p>As demonstrated below, selecting an item in the select input will check the appropriate box, and checking one of the checkboxes will select the appropriate option in the select. If multiple boxes are checked a new option is dynamically added to the select. All aspects of this behavior can be programatically controlled.</p>
+	<h3>Examples</h3>
+	<p>Below is a simple, unstyled example. Check one or more boxes, then change the select input to see how it behaves.</p>
+	<%= simple_example %>
+	<p>The next example is more in line with it's intended use case. Note that the effects are not part of this library, but are easily accomplished with Scriptaculous. Try selecting many values to see the overflow behavior described in the API section.</p>
+	<%= complex_example %>
+	<% html 'HTML' do %><%= encode_entities(simple_example + complex_example) %><% end %>
+	<% javascript 'JavaScript' do %><%= selectmultiple_js %><% end %>
+	<% css 'CSS' do %><%= selectmultiple_css %><% end %>
+<% end %>
+
+<% section 'api' do %>
+	<% api_table 'Instance' do |api| %>
+		<% api.item :returns => 'Control.SelectMultiple', :signature => 'initialize(Element select, Element container [,Hash options])', :description => 'Pass in string ids, or Element objects to the select input, and a container with checkboxes.' %>
+		<% api.item :returns => 'null', :signature => 'setValue(mixed value)', :description => 'value string should be a string of values separated by the valueSeparator, or an array of values.' %>
+		<% api.item :returns => 'Element', :signature => 'select', :description => '' %>
+		<% api.item :returns => 'Element', :signature => 'container', :description => '' %>
+		<% api.item :returns => 'number', :signature => 'numberOfCheckedBoxes', :description => '' %>
+		<% api.item :returns => 'Array', :signature => 'checkboxes', :description => '' %>
+		<% api.item :returns => 'bool', :signature => 'hasExtraOption', :description => '' %>
+	<% end %>
+	<% options_table 'Options' do |options| %>
+		<% options.item :type => 'string', :name => 'checkboxSelector', :default => '\'input[type=checkbox]\'', :description => 'CSS selector applied to the container to get the list of checkboxes.' %>
+		<% options.item :type => 'string', :name => 'nameSelector', :default => '\'span.name\'', :description => 'CSS selector applied to the container to get the list of labels.' %>
+		<% options.item :type => 'string', :name => 'labelSeparator', :default => '\', \'', :description => '' %>
+		<% options.item :type => 'string', :name => 'valueSeparator', :default => '\',\'', :description => '' %>
+		<% options.item :type => 'mixed', :name => 'overflowString', :default => 'function(str){return str.truncate();}', :description => 'string, or a function that returns a string if the label is to long for the input.' %>
+		<% options.item :type => 'number', :name => 'overflowLength', :default => '30', :description => 'Number of characters in the label before it is replaced with overflowString.' %>
+	<% end %>
+	<% events_table 'Events' do |events| %>
+		<% events.item :signature => 'afterChange(string value)', :description => 'Called whenever the value of the select changes. This is more inclusive than the \'change\' event of the select Element, because it includes when a checkbox is clicked, or when setValue() is called.' %>
+	<% end %>
+<% end %>

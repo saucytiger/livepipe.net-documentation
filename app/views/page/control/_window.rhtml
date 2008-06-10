@@ -1,0 +1,294 @@
+<% window_css = capture do %>
+	#control_overlay {
+		background-color:#000;
+	}
+	
+	.modal {
+		background-color:#fff;
+		padding:10px;
+		border:1px solid #333;
+	}
+
+	.tooltip {
+		border:1px solid #000;
+		background-color:#fff;
+		height:25px;
+		width:200px;
+		font-family:"Lucida Grande",Verdana;
+		font-size:10px;
+		color:#333;
+	}
+
+	.simple_window {
+		width:250px;
+		height:50px;
+		border:1px solid #000;
+		background-color:#fff;
+		padding:10px;
+		text-align:left;
+		font-family:"Lucida Grande",Verdana;
+		font-size:12px;
+		color:#333;
+	}
+	
+	.window {
+		background-image:url("/stylesheets/window_background.png");
+		background-position:top left;
+		-moz-border-radius: 10px;
+		-webkit-border-radius: 10px;
+		padding:10px;
+		font-family:"Lucida Grande",Verdana;
+		font-size:13px;
+		font-weight:bold;
+		color:#fff;
+		text-align:center;
+		min-width:150px;
+		min-height:100px;
+	}
+	
+	.window .window_contents {
+		margin-top:10px;
+		width:100%;
+		height:100%;	
+	}
+
+	.window .window_header {
+		text-align:center;
+	}
+
+	.window .window_title {
+		margin-top:-7px;
+		margin-bottom:7px;
+		font-size:11px;
+		cursor:move;
+	}
+
+	.window .window_close {
+		display:block;
+		position:absolute;
+		top:4px;
+		left:5px;
+		height:13px;
+		width:13px;
+		background-image:url("/stylesheets/window_close.gif");
+		cursor:pointer;
+	    cursor:hand;
+	}
+<% end %>
+<% window_js = capture do %>
+	//Centered Window / Content on Page
+	var centered = new Control.Window($(document.body).down('[href=#centered]'),{
+		className: 'simple_window',
+		closeOnClick: true
+	});
+	
+	//Relative Window / Dynamic Content
+	var relative = new Control.Window($(document.body).down('[href=#relative]'),{
+		position: 'relative',
+		className: 'simple_window',
+		closeOnClick: true
+	});
+	relative.container.insert('This content was inserted with JavaScript.');
+	
+	//HoverBox
+	var relative = new Control.Window($(document.body).down('[href=#hoverbox]'),{
+		position: 'relative',
+		hover: true,
+		offsetLeft: 75,
+		width: 175,
+		className: 'tooltip'
+	});
+	
+	//Relative Window / Content from Ajax
+	var ajax = new Control.Window($(document.body).down('[href=?ajax]'),{
+		className: 'simple_window',
+		closeOnClick: 'container',
+		offsetLeft: 150
+	});
+	
+	//styled examples use the window factory for a shared set of behavior
+	var window_factory = function(container,options){
+		var window_header = new Element('div',{
+			className: 'window_header'
+		});
+		var window_title = new Element('div',{
+			className: 'window_title'
+		});
+		var window_close = new Element('div',{
+			className: 'window_close'
+		});
+		var window_contents = new Element('div',{
+			className: 'window_contents'
+		});
+		var w = new Control.Window(container,Object.extend({
+			className: 'window',
+			closeOnClick: window_close,
+			draggable: window_header,
+			insertRemoteContentAt: window_contents,
+			afterOpen: function(){
+				window_title.update(container.readAttribute('title'))
+			}
+		},options || {}));
+		w.container.insert(window_header);
+		window_header.insert(window_title);
+		window_header.insert(window_close);
+		w.container.insert(window_contents);
+		return w;
+	};
+	
+	var styled_window_one = window_factory($('styled_window_one'));
+	
+	var styled_window_two = window_factory($('styled_window_two'));
+	
+	//Modal Window
+	var modal = new Control.Modal($('modal'),{
+		overlayOpacity: 0.75,
+		className: 'modal',
+		fade: true
+	});
+	
+	//ToolTip
+	var tooltip = new Control.ToolTip($('tooltip'),'Windows can also act as tool tips.',{
+		className: 'tooltip'
+	});
+<% end %>
+
+<% content_for :head do %>
+	<script>
+		document.observe('dom:loaded',function(){
+			<%= window_js %>
+		});
+	</script>
+	<style>
+		<%= window_css %>
+	</style>
+<% end %>
+
+<% content_for :body do %>
+	<div id="centered">This content was already on the page.</div>
+	<div id="hoverbox">Windows can act as hover boxes.</div>
+<% end %>
+
+<%= header 'Control.Window' %>
+<%= introduction 'Windows, Modals, LightBoxes and Tooltips for Prototype.' %>
+
+<% tabs 'main_tabs' do |tabs| %>
+	<% tabs.tab 'tutorial', 'Tutorial' %>
+	<% tabs.tab 'api', 'API' %>
+	<% tabs.source 'http://github.com/saucytiger/livepipe-ui/tree/master/src/window.js' %>
+<% end %>
+
+<% section 'tutorial' do %>
+	<% paragraph 'Introduction' do %>Control.Window is a fully programmable, multi purpose windowing toolkit for Prototype. It covers a wide variety of use cases and allows for a high degree of customization. It can attach to links to open the targets as windows, or can be filled with dynamic content. It includes support for stackable, draggable and resizable windows. Subclasses to handle Modal windows, LightBoxes and Tooltips are included.<% end %>
+	
+	<% examples_table false,'Name','Options' do |examples| %>
+		<% examples.item :name => '<a href="#centered">Centered Window / Content on Page</a>', :options => "className: 'simple_window', closeOnClick: true" %>
+		<% examples.item :name => '<a href="#relative">Relative Window / Dynamic Content</a>', :options => "position: 'relative', className: 'simple_window', closeOnClick: true" %>
+		<% examples.item :name => '<a href="#hoverbox">HoverBox</a>', :options => "position: 'relative', offsetLeft: 75, width: 175, hover: true, className: 'tooltip'" %>
+		<% examples.item :name => '<a href="?ajax">Relative Window / Content from Ajax</a>', :options => "offsetLeft: 150, position: 'relative', className: 'simple_window', closeOnClick: 'container'" %>
+		<% examples.item :name => '<a href="/stylesheets/sample_images/tabs_example_1_big.jpg" id="styled_window_one" title="Piha Beach, New Zealand">Draggable / Styled Window One</a>', :options => "window_factory() options" %>
+		<% examples.item :name => '<a href="/stylesheets/sample_images/tabs_example_2_big.jpg" id="styled_window_two" title="Pioneer Mountains, Idaho">Draggable / Styled Window Two</a>', :options => "window_factory() options" %>
+		<% examples.item :name => '<a href="/stylesheets/sample_images/tabs_example_3_big.jpg" id="modal">Modal Window</a>', :options => "fade: true, overlayOpacity: 0.75, className: 'modal'" %>
+		<% examples.item :name => '<a href="#" id="tooltip">Tooltip</a>', :options => "className: 'tooltip'" %>
+	<% end %>
+
+	<% paragraph 'Modal Windows' do %>The subclass <b>Control.Modal</b> has the same syntax and signature as Control.Window. When the first modal is created, Control.Overlay will load, which attaches <b>div#control_overlay</b> to the document.body. You must style this element to create the intended visual effect. Only one modal can be open at a time. When one is opened, it will close all other modals.<% end %>
+
+	<% paragraph 'LightBoxes' do %>If the link attached to the window has a file name that has any of the following extensions: jpg, jpeg, gif, png, tif, tiff, Control.Window will automatically try to display the image inside the window once it is open. The <b>Control.LightBox</b> subclass has the same syntax and signature as Control.Window but delay the opening of the window until all of the images inside the window have loaded. This also applies this behavior to the response of any ajax call. You can pass in the <b>modal</b> option to make the LightBox act as a modal.<% end %>
+
+	<% paragraph 'HoverBox &amp; Tooltips' do %>You can set the <b>hover</b> property to true to make any window behave as a hoverbox. Note that if the window completely overlaps the link that opened it, you won't be able to close the window in some browsers since the onmouseout even will no longer fire. <b>Control.ToolTip</b> is a subclass of Control.Window that has a syntax optimized for tooltips. The first parameter is the element that the tooltip will appear over, and the second parameter is the text of the tooltip. Options can still be passed as the last parameter.<% end %>
+	
+	<% paragraph 'Local, AJAX or iframe Modals' do %>You can open a window with content that is already on the page, so long as it is contained in any element that has an id. You create this kind of link just as you would link to any other element id &lt;a href="#my_container_name"&gt;. If you want to link to an AJAX call just specify the full URL in your link's href. To create an iframe, do the same and pass in the parameter {iframe: true}. <b>Dynamic iframe creation is buggy on the browser level and should be avoided.</b><% end %>
+
+	<% javascript 'JavaScript' do %><%= window_js %><% end %>
+	<% css 'CSS' do %><%= window_css %><% end %>
+<% end %>
+
+<% section 'api' do %>
+	<% api_table 'Class' do |api| %>
+		<% api.item :returns => 'array', :signature => 'windows', :description => 'Returns all windows, open or closed, in the order they were created.' %>
+		<% api.item :returns => 'number', :signature => 'baseZIndex', :description => 'Defaults to 9999.' %>
+		<% api.item :returns => 'Control.Window', :signature => 'open([Element container [,Hash options]])', :description => 'Creates a window, opens it then returns it.' %>
+	<% end %>
+	<% api_table 'Instance' do |api| %>
+		<% api.item :returns => 'Control.Window', :signature => 'initialize([Element container [,Hash options]])', :description => 'See the tutorial for the different behaviors based on the lack of, or type of container passed.' %>
+		<% api.item :returns => 'bool', :signature => 'open([Event])', :description => '' %>
+		<% api.item :returns => 'bool', :signature => 'close([Event])', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'position([Event])', :description => 'Repositions the window.' %>
+		<% api.item :returns => 'null', :signature => 'ensureInBounds()', :description => 'Redraws the window inside the viewport bounds if it is currently outside.' %>
+		<% api.item :returns => 'null', :signature => 'bringToFront()', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'destroy()', :description => '' %>
+	<% end %>
+	<% options_table 'Options' do |options| %>
+		<% options.item :type => 'mixed', :name => 'width', :default => "null", :description => 'Can be null, number (in pixels), or function returning number.' %>
+		<% options.item :type => 'mixed', :name => 'height', :default => "null", :description => 'Can be null, number (in pixels), or function returning number.' %>
+		<% options.item :type => 'mixed', :name => 'className', :default => "false", :description => 'Class name to apply to the container.' %>
+		<% options.item :type => 'mixed', :name => 'position', :default => "'center'", :description => "Can be string 'center', string 'relative' (to related element position), string 'mouse' (will follow the mouse), array [number x, number y] or array [function(){return x},function(){return y}]" %>
+		<% options.item :type => 'mixed', :name => 'offsetLeft', :default => "0", :description => 'number x or function(){return x}' %>
+		<% options.item :type => 'mixed', :name => 'offsetTop', :default => "0", :description => 'number y or function(){return y}' %>
+		<% options.item :type => 'bool', :name => 'iframe', :default => "false", :description => 'If the window has an href, this will display the href as an iframe instead of requesting the url as an an Ajax.Request.' %>
+		<% options.item :type => 'mixed', :name => 'hover', :default => "false", :description => 'Element object to hover over, or if "true" only available for windows with sourceContainer (an anchor or any element already on the page with an href attribute).' %>
+		<% options.item :type => 'mixed', :name => 'indicator', :default => "false", :description => 'false or Element to show and hide when ajax requests, images and iframes are loading.' %>
+		<% options.item :type => 'mixed', :name => 'closeOnClick', :default => "false", :description => 'false, string \'container\', string \'overlay\' or Element.' %>
+		<% options.item :type => 'bool', :name => 'iframeshim', :default => "true", :description => 'Positions an iFrameShim underneath the window.' %>
+		<% options.item :type => 'bool', :name => 'fade', :default => "false", :description => '' %>
+		<% options.item :type => 'number', :name => 'fadeDuration', :default => "0.75", :description => '' %>
+		<% options.item :type => 'mixed', :name => 'draggable', :default => "false", :description => 'If true, div.draggable_handle will be inserted into the container, which will become the draggable handle. If Element is passed, the element will become the handle.' %>
+		<% options.item :type => 'mixed', :name => 'resizable', :default => "false", :description => 'If true, div.resizable_handle will be inserted into the container, which will become the resizable handle. If Element is passed, the element will become the handle.' %>
+		<% options.item :type => 'mixed', :name => 'minHeight', :default => "false", :description => 'For resizable. Can be false or number in pixels.' %>
+		<% options.item :type => 'mixed', :name => 'minWidth', :default => "false", :description => 'For resizable. Can be false or number in pixels.' %>
+		<% options.item :type => 'mixed', :name => 'maxHeight', :default => "false", :description => 'For resizable. Can be false or number in pixels.' %>
+		<% options.item :type => 'mixed', :name => 'maxWidth', :default => "false", :description => 'For resizable. Can be false or number in pixels.' %>
+		<% options.item :type => 'bool', :name => 'constrainToViewport', :default => "false", :description => 'If draggable, the window will stay in bounds of the viewport. May not work with scrollable windows.' %>
+		<% options.item :type => 'Hash', :name => 'parameters', :default => "{}", :description => 'Will be passed to Ajax.Request if it is an Ajax window.' %>
+		<% options.item :type => 'mixed', :name => 'insertRemoteContentAt', :default => "this.container", :description => 'Element to insert Ajax, IFrame or Lightbox content into. Can be string selector for this.container.down(), or an Element that must be a child of this.container.' %>
+	<% end %>
+	<% events_table 'Events' do |events| %>
+		<% events.item :signature => 'afterInitialize()', :description => '' %>
+		<% events.item :signature => 'beforeOpen()', :description => 'Throwing $break inside a callback will prevent the window from opening.' %>
+		<% events.item :signature => 'onRemoteContentLoaded()', :description => 'Iframe, Ajax and LightBox windows will trigger this event.' %>
+		<% events.item :signature => 'onComplete(object request)', :description => 'Ajax windows only.' %>
+		<% events.item :signature => 'onSuccess(object request)', :description => 'Ajax windows only.' %>
+		<% events.item :signature => 'onFailure(object request)', :description => 'Ajax windows only.' %>
+		<% events.item :signature => 'onException(object request, object exception)', :description => 'Ajax windows only.' %>
+		<% events.item :signature => 'beforeClose()', :description => 'Throwing $break inside a callback will prevent the window from opening.' %>
+		<% events.item :signature => 'afterClose()', :description => '' %>
+		<% events.item :signature => 'bringToFront()', :description => '' %>
+		<% events.item :signature => 'afterDestroy()', :description => '' %>
+		<% events.item :signature => 'onResize()', :description => 'Resizable windows only.' %>
+		<% events.item :signature => 'onDrag()', :description => 'Draggable windows only.' %>
+		<% events.item :signature => 'afterOpen()', :description => '' %>
+	<% end %>
+	<% api_table 'Control.Overlay Class' do |api| %>
+		<% api.item :returns => 'null', :signature => 'load()', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'show()', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'hide()', :description => '' %>
+	<% end %>
+	<% events_table 'Control.Overlay Events' do |events| %>
+		<% events.item :signature => 'beforeShow()', :description => 'Throwing $break will prevent the overlay from being shown.' %>
+		<% events.item :signature => 'afterShow()', :description => '' %>
+		<% events.item :signature => 'beforeHide()', :description => 'Throwing $break will prevent the overlay from being hidden.' %>
+		<% events.item :signature => 'afterHide()', :description => '' %>
+	<% end %>
+	<% paragraph 'Control.Window Subclasses' do %>All subclasses below inherit all of the methods, options and events from Control.Window.<% end %>
+	<% api_table 'Control.ToolTip Instance' do |api| %>
+		<% api.item :returns => 'Control.ToolTip', :signature => 'initialize(Element container [,mixed tooltip [,Hash options]])', :description => 'Tooltip can be a string, or an Element that is already on the page.' %>
+	<% end %>
+	<% api_table 'Control.Modal Class' do |api| %>
+		<% api.item :returns => 'Control.Modal', :signature => 'open([Element container [,Hash options]])', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'close()', :description => 'Closes current Modal if one is open.' %>
+		<% api.item :returns => 'mixed', :signature => 'current', :description => 'False, or Control.Modal.' %>
+	<% end %>
+	<% api_table 'Control.Modal Instance' do |api| %>
+		<% api.item :returns => 'Control.Modal', :signature => 'initialize([Element container [,Hash options]])', :description => '' %>
+	<% end %>
+	<% options_table 'Control.Modal Options' do |options| %>
+		<% options.item :type => 'number', :name => 'overlayOpacity', :default => "0.5", :description => '' %>
+	<% end %>
+	<% api_table 'Control.LightBox Instance' do |api| %>
+		<% api.item :returns => 'Control.LightBox', :signature => 'open([Element container [,Hash options]])', :description => '' %>
+	<% end %>
+	<% options_table 'Control.LightBox Options' do |options| %>
+		<% options.item :type => 'bool', :name => 'modal', :default => "false", :description => 'Will act as a Control.Modal instead of a Control.Window if true.' %>
+	<% end %>
+<% end %>

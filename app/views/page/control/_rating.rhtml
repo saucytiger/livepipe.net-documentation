@@ -1,0 +1,178 @@
+<% rating_js = capture do %>
+	var rating_one = new Control.Rating('rating_one');
+	var rating_two = new Control.Rating('rating_two',{value: 2.4});
+	var rating_four = new Control.Rating('rating_four',{value: 4,rated: true});
+	var rating_five = new Control.Rating('rating_five',{value: 6,rated: false,max:9});
+	var rating_six = new Control.Rating('rating_six',{
+		value: 6,
+		rated: false,
+		min: 3,
+		max: 12,
+		multiple: true,
+		reverse: true
+	});
+	var rating_seven = new Control.Rating('rating_seven',{
+		input: 'rating_seven_input',
+		multiple: true
+	});
+	var rating_eight = new Control.Rating('rating_eight',{
+		input: 'rating_eight_select',
+		multiple: true
+	});
+<% end %>
+<% rating_css = capture do %>
+	.rating_container {
+		clear:both;
+	}
+
+	.rating_container a {
+		float:left;
+		display:block;
+		width:25px;
+		height:25px;
+		border:0;
+		background-image:url("/stylesheets/rating.gif");
+	}
+	
+	.rating_container a.rating_off {
+		background-position:0 0px;
+	}
+	
+	.rating_container a.rating_half {
+		background-position:0 -25px;
+	}
+	
+	.rating_container a.rating_on {
+		background-position:0 -50px;
+	}
+	
+	.rating_container a.rating_selected {
+		background-position:0 -75px;
+	}
+<% end %>
+
+<% content_for :head do %>
+	<style>
+		<%= rating_css %>
+	</style>
+	<script>
+		document.observe('dom:loaded',function(){
+			<%= rating_js %>
+		});
+	</script>
+<% end %>
+
+<%= header 'Control.Rating' %>
+<%= introduction 'Unobtrusive CSS based rating widget for Prototype.' %>
+
+<% tabs 'main_tabs' do |tabs| %>
+	<% tabs.tab 'tutorial', 'Tutorial' %>
+	<% tabs.tab 'api', 'API' %>
+	<% tabs.source 'http://github.com/saucytiger/livepipe-ui/tree/master/src/rating.js' %>
+<% end %>
+
+<% section 'tutorial' do %>
+	<% paragraph 'Introduction' do %>Control.Rating attaches to any div, span or table cell on your page in one line of code to create a fully customizable CSS based ratings widget. Each control can optionally post an Ajax request when it's value is set, or can interact with text inputs or select elements that are already on your page. It uses four (customizable) class names to determine each link's state:<% end %>
+	<ul>
+		<li>rating_off</li>
+		<li>rating_half</li>
+		<li>rating_on</li>
+		<li>rating_selected</li>
+	</ul>
+
+	<table width="100%" cellpadding="0" cellspacing="0" class="api_table">
+		<thead>
+			<tr><td>Example</td><td class="right">Options</td></tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td><div id="rating_one" class="rating_container">
+					<a href="#" class="rating_on"></a>
+					<a href="#" class="rating_on"></a>
+					<a href="#" class="rating_half"></a>
+					<a href="#" class="rating_off"></a>
+					<a href="#" class="rating_off"></a>
+				</div></td>
+				<td class="right">{}</td>
+			</tr>
+			<tr>
+				<td><div id="rating_two" class="rating_container"></div></td>
+				<td class="right">{value: 2.4}</td>
+			</tr>
+			<tr>
+				<td><div id="rating_four" class="rating_container"></div></td>
+				<td class="right">{value: 4, rated: true}</td>
+			</tr>
+			<tr>
+				<td><div id="rating_five" class="rating_container"></div></td>
+				<td class="right">{value: 6, rated: false, max:9}</td>
+			</tr>
+			<tr>
+				<td><div id="rating_six" class="rating_container"></div></td>
+				<td class="right">{value: 6, rated: false, min: 3, max: 12, multiple: true, reverse: true}</td>
+			</tr>
+			<tr>
+				<td><div id="rating_seven" class="rating_container"></div><input id="rating_seven_input" value="2" style="width:50px;"/></td>
+				<td class="right">{input: 'rating_seven_input', multiple: true}</td>
+			</tr>
+			<tr>
+				<td><div id="rating_eight" class="rating_container"></div>
+				<select id="rating_eight_select">
+					<option value="1">Bad</option>
+					<option value="2">Good</option>
+					<option value="3">Great</option>
+					<option value="4">Excellent</option>
+					<option value="5">Really Excellent</option>
+				</select></td>
+				<td class="right">{input: 'rating_eight_select', multiple: true}</td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<% html 'HTML' do %><% rating_html = capture do %>
+		<!-- you can pre-populate a rating with the HTML the rating will generate-->
+		<div id="rating_one" class="rating_container">
+			<a href="#" class="rating_on"></a>
+			<a href="#" class="rating_on"></a>
+			<a href="#" class="rating_half"></a>
+			<a href="#" class="rating_off"></a>
+			<a href="#" class="rating_off"></a>
+		</div>
+
+		<!-- or just provide an empty container -->
+		<div id="rating_two" class="rating_container"></div>
+	<% end %><%= encode_entities rating_html %><% end %>
+	<% javascript 'JavaScript' do %><%= rating_js %><% end %>
+	<% css 'CSS' do %><%= rating_css %><% end %>
+<% end %>
+
+<% section 'api' do %>
+	<% paragraph 'DOM Modifications' do %><b>Control.Rating.initialize()</b> will insert a series of <b>a</b> elements inside of the container you pass in, if the <b>a</b> elements to not already exist.<% end %>
+	<% api_table 'Class' do |api| %>
+		<% api.item :returns => 'array', :signature => 'instances', :description => 'All created Control.Rating instances.' %>
+		<% api.item :returns => 'mixed', :signature => 'findByElementId(string id)', :description => 'Find any Control.Rating instance who\'s container has an id.' %>
+	<% end %>
+	<% api_table 'Instance' do |api| %>
+		<% api.item :returns => 'Control.Rating', :signature => 'initialize(Element container [, Hash options])', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'setValue(number value [,bool rated [,bool prevent_callbacks]])', :description => 'Set the value of the ratings widget and redraw it. Setting force_selected to true will draw the input as if it has been rated, but will not mark it as rated in the options hash. Setting prevent_callbacks to true will prevent the afterChange event and optional Ajax request from firing.' %>
+		<% api.item :returns => 'null', :signature => 'disable()', :description => 'Removes all event handlers from the links.' %>
+		<% api.item :returns => 'Element', :signature => 'container', :description => '' %>
+		<% api.item :returns => 'number', :signature => 'value', :description => '' %>
+	<% end %>
+	<% options_table 'Options' do |options| %>
+		<% options.item :type => 'number', :name => 'value', :default => 'null', :description => 'Default value, gets set into the value property of the instance and discarded from the options hash. Anything that is not a whole number (i.e. 3.1) results in a the \'half\' class name being assigned.' %>
+		<% options.item :type => 'number', :name => 'min', :default => '1', :description => '' %>
+		<% options.item :type => 'number', :name => 'max', :default => '5', :description => '' %>
+		<% options.item :type => 'bool', :name => 'rated', :default => 'false', :description => 'Has the widget already been rated.' %>
+		<% options.item :type => 'mixed', :name => 'input', :default => 'false', :description => 'false or string id, or Element object of a text, hidden, or select input.' %>
+		<% options.item :type => 'bool', :name => 'reverse', :default => 'false', :description => 'Display the links in reverse order.' %>
+		<% options.item :type => 'bool', :name => 'capture', :default => 'true', :description => 'Stop the click event on each rating to propagate.' %>
+		<% options.item :type => 'bool', :name => 'multiple', :default => 'false', :description => 'Can the user rate multiple times.' %>
+		<% options.item :type => 'Hash', :name => 'classNames', :default => '{off: \'rating_off\', half: \'rating_half\', on: \'rating_on\', selected: \'rating_selected\'}', :description => 'Hash of state dependent class names.' %>
+		<% options.item :type => 'mixed', :name => 'updateUrl', :default => 'false', :description => 'false or string URL to post an Ajax request to when the value changes.' %>
+		<% options.item :type => 'string', :name => 'updateParameterName', :default => '\'value\'', :description => 'The name of the POST key that will contain the value.' %>
+	<% end %>
+	<% events_table 'Events' do |events| %>
+		<% events.item :signature => 'afterChange(number value)', :description => '' %>
+	<% end %>	
+<% end %>

@@ -1,0 +1,171 @@
+<% scrollbar_css = capture do %>
+#scrollbar_container {
+	position:relative;
+	width:500px;
+}
+
+#scrollbar_track {
+	position:absolute;
+	top:0;
+	right:0;
+	height:100%;
+	width:10px;
+	background-color:transparent;
+	cursor:move;
+}
+
+#scrollbar_handle {
+	width:10px;
+	background-color:#5c92e7;
+	cursor:move;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	opacity:0.9;
+    -moz-opacity:0.9;
+}
+
+#scrollbar_content {
+	overflow:hidden;
+	width:485px;
+	height:250px;
+}
+<% end %>
+<% scrollbar_js = capture do %>
+	var scrollbar = new Control.ScrollBar('scrollbar_content','scrollbar_track');
+	
+	$('scroll_down_50').observe('click',function(event){
+		scrollbar.scrollBy(-50);
+		event.stop();
+	});
+	
+	$('scroll_up_50').observe('click',function(event){
+		scrollbar.scrollBy(50);
+		event.stop();
+	});
+	
+	$('scroll_top').observe('click',function(event){
+		scrollbar.scrollTo('top');
+		event.stop();
+	});
+	
+	$('scroll_bottom').observe('click',function(event){
+		//to animate a scroll operation you can pass true
+		//or a callback that will be called when scrolling is complete
+		scrollbar.scrollTo('bottom',function(){
+			if(typeof(console) != "undefined")
+				console.log('Finished scrolling to bottom.');
+		});
+		event.stop();
+	});
+	
+	$('scroll_second').observe('click',function(event){
+		//you can pass a number or element to scroll to
+		//if you pass an element, it will be centered, unless it is
+		//near the bottom of the container
+		scrollbar.scrollTo($('second_subhead'));
+		event.stop();
+	});
+	
+	$('scroll_third').observe('click',function(event){
+		//passing true will animate the scroll
+		scrollbar.scrollTo($('third_subhead'),true);
+		event.stop();
+	});
+	
+	$('scroll_insert').observe('click',function(event){
+		$('scrollbar_content').insert('<p><b>Inserted: ' + $('repeat').innerHTML + '</b></p>');
+		//you only need to call this if ajax or dom operations modify the layout
+		//this is automatically called when the window resizes
+		scrollbar.recalculateLayout();
+		event.stop();
+	});
+<% end %>
+
+<% content_for :head do %>
+	<script>
+		document.observe('dom:loaded',function(){
+			<%= scrollbar_js %>
+		});
+	</script>
+	<style>
+		<%= scrollbar_css %>
+	</style>
+<% end %>
+
+<%= header 'Control.ScrollBar' %>
+<%= introduction 'Pure JavaScript/CSS scroll bars for Prototype.' %>
+
+<% tabs 'main_tabs' do |tabs| %>
+	<% tabs.tab 'tutorial', 'Tutorial' %>
+	<% tabs.tab 'api', 'API' %>
+	<% tabs.source 'http://github.com/saucytiger/livepipe-ui/tree/master/src/scrollbar.js' %>
+<% end %>
+
+<% section 'tutorial' do %>
+	<% paragraph 'Introduction' do %><b>Why emulate a native UI component?</b> Primarily, the inconsistent cross browser behavior of native scrollbars. Firefox for instance considers scrollbars to be entirely outside the layout of a document. If a Draggable element goes over a native scrollbar in this case, the mouse has left the page, disrupting the drag operation. Rewriting the scrollbar in the DOM solves this problem. Fringe benefits include granular control over the behavior and style as well as richer API.<% end %>
+	<% paragraph do %>This scrollbar implementation includes mouse wheel support, a proportionally drawn handle, and can accommodate dynamic content and layout changes with the <b>recalculateLayout()</b> method.<% end %>
+	<div style="float:right;">
+		<h3>Scroll To...</h3>
+		<ul>
+			<li><a href="#" id="scroll_down_50">Up 50 Pixels</a></li>
+			<li><a href="#" id="scroll_up_50">Down 50 Pixels</a></li>
+			<li><a href="#" id="scroll_top">Top</a></li>
+			<li><a href="#" id="scroll_bottom">Bottom (Animated)</a></li>
+			<li><a href="#" id="scroll_second">Second Subhead</a></li>
+			<li><a href="#" id="scroll_third">Third Subhead (Animated)</a></li>
+		</ul>
+	</div>
+	<div id="scrollbar_container">
+		<div id="scrollbar_track"><div id="scrollbar_handle"></div></div>
+		<div id="scrollbar_content">
+			<h3>Use the Mouse Wheel or Handle to Scroll</h3>
+			<p>Nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Fusce consectetuer. Phasellus molestie, sem vel laoreet pretium, arcu arcu rutrum eros, ac mattis felis ante at orci. Vivamus vel mauris. Ut porttitor, nunc eu tincidunt gravida, orci odio luctus mi, id venenatis dui nunc sit amet turpis. Mauris urna nisl, feugiat a, ultrices id, ultrices et, est. Nam eu felis non tortor luctus congue. Mauris consequat malesuada augue. Donec eu nibh in libero tempor aliquet. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Pellentesque sapien erat, imperdiet tincidunt, vestibulum eget, fringilla vel, odio. Ut risus. Ut pretium neque ac velit. Vivamus diam. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In hac habitasse platea dictumst. Nunc luctus fringilla mi. Nunc ultrices nisi ac urna.</p>
+			<h3 id="second_subhead">Convallis Felis ac Massa Accumsan</h3>
+			<p id="repeat">Phasellus faucibus adipiscing quam. Maecenas gravida, diam sit amet mollis accumsan, risus diam ornare leo, non sollicitudin lorem mi vitae ante. In at mi. In vestibulum nunc eleifend justo. Nullam semper. Nulla venenatis ornare ipsum. Phasellus pharetra. Suspendisse molestie. Fusce porta vulputate quam. Etiam vitae tortor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Maecenas vulputate magna nec diam. Aliquam sagittis lectus a pede. Sed fermentum, risus non sollicitudin posuere, erat arcu iaculis nibh, eu faucibus sapien velit dapibus ipsum. Proin fringilla sapien sed dui.</p>
+			<h3 id="third_subhead">Eleifend Justo Nullam Semper</h3>
+			<p>Cras eros tellus, posuere at, condimentum eget, fringilla nec, lectus. Mauris ut enim. Quisque imperdiet rutrum elit. Curabitur in nunc. Sed pretium. Aliquam convallis. Proin venenatis. Proin sed magna. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nunc tincidunt. Nam vitae leo at urna dictum venenatis.</p>
+			<p>Cras iaculis. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut nisl. Duis quis enim at justo euismod accumsan. Duis mollis. Curabitur sed ante. Morbi bibendum iaculis ligula. Suspendisse aliquet est. Sed velit orci, sagittis non, posuere vitae, aliquet in, massa. Vestibulum egestas.</p>
+		</div>
+	</div>
+	<p><a href="#" id="scroll_insert">Insert Paragraph and recalculateLayout()</a></p>
+	<% paragraph 'HTML' do %><b>Control.ScrollBar requires a very particular HTML structure.</b> There must be a positioned outer container, with the track and scrollable container as direct children. The track must contain a single div (with any id or class name). You do not reference the outer container or handle when calling initialize(), only the scrollable content, and the track. The scrollable content must have it's overflow property set to hidden.<% end %>
+	<% html do %><% scrollbar_html = capture do %>
+		<div id="scrollbar_container">
+			<div id="scrollbar_track"><div id="scrollbar_handle"></div></div>
+			<div id="scrollbar_content">...</div>
+		</div>
+	<% end %><%= encode_entities scrollbar_html %><% end %>
+	<% javascript 'JavaScript' do %><%= scrollbar_js %><% end %>
+	<% css 'CSS' do %><%= scrollbar_css %><% end %>
+<% end %>
+
+<% section 'api' do %>
+	<% api_table 'Instance' do |api| %>
+		<% api.item :returns => 'Control.ScrollBar', :signature => 'initialize(Element container, Element track [,Hash options])', :description => 'Automatically calls recalculateLayout(). The handle will be obtained via track.firstDescendant()' %>
+		<% api.item :returns => 'null', :signature => 'destroy()', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'enable()', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'disable()', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'reset()', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'recalculateLayout()', :description => 'Call this if the page layout changes from dynamic content. Recalculates track length, handle length and wether or not the scrollbar should be hidden or visible.' %>
+		<% api.item :returns => 'null', :signature => 'scrollTo(mixed y [,mixed animate])', :description => '<b>y</b> can be an Element, a number (offsetTop), or the string \'top\' or \'bottom\'. <b>animate</b> (smooth scrolling) can be a boolean, or can be a callback to execute when the scroll is complete. If a callback is passed the it is always called, even if scrolling is not necessary.' %>
+		<% api.item :returns => 'null', :signature => 'scrollBy(number y)', :description => '<b>y</b> can be a positive or negative integer.' %>
+		<% api.item :returns => 'Element', :signature => 'handle', :description => '' %>
+		<% api.item :returns => 'Element', :signature => 'track', :description => '' %>
+		<% api.item :returns => 'Element', :signature => 'container', :description => '' %>
+	<% end %>	
+	<% options_table 'Options' do |options| %>
+		<% options.item :type => 'string', :name => 'active_class_name', :default => "'scrolling'", :description => '' %>
+		<% options.item :type => 'Element', :name => 'apply_active_class_name_to', :default => 'this.container', :description => '' %>
+		<% options.item :type => 'number', :name => 'notification_timeout_length', :default => '125', :description => 'Milliseconds between change() events when scrolling.' %>
+		<% options.item :type => 'number', :name => 'handle_minimum_height', :default => '25', :description => 'If <b>proportional</b> is true, this is the minimum height in pixels. ' %>
+		<% options.item :type => 'number', :name => 'scroll_to_smoothing', :default => '0.01', :description => '' %>
+		<% options.item :type => 'number', :name => 'scroll_to_steps', :default => '15', :description => '' %>
+		<% options.item :type => 'bool', :name => 'proportional', :default => 'true', :description => 'Draw the handle proportional to (container height / length of track).' %>
+		<% options.item :type => 'Hash', :name => 'slider_options', :default => '{}', :description => 'Will be passed to Control.Slider' %>
+	<% end %>
+	<% events_table 'Events' do |events| %>
+		<% events.item :signature => 'enabled()', :description => '' %>
+		<% events.item :signature => 'disabled()', :description => '' %>
+		<% events.item :signature => 'change(number delta)', :description => 'Forwarded from slider.onSlide and slider.onChange, but will fire at a maximum interval of options.notification_timeout_length for performance.' %>
+	<% end %>
+<% end %>

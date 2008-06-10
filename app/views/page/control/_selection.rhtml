@@ -1,0 +1,62 @@
+<%= header 'Control.Selection' %>
+<%= introduction 'Programmable object selection API for Prototype.' %>
+
+<% tabs 'main_tabs' do |tabs| %>
+	<% tabs.tab 'tutorial', 'Tutorial' %>
+	<% tabs.tab 'api', 'API' %>
+	<% tabs.source 'http://github.com/saucytiger/livepipe-ui/tree/master/src/selection.js' %>
+<% end %>
+
+<% section 'tutorial' do %>
+	
+<% end %>
+
+<% section 'api' do %>
+	<% paragraph 'DOM Modifications' do %><b>Control.Selection.load()</b> will insert <b>div#control_selection</b> as a child of document.body. <b>Control.Selection.DragProxy.load()</b> will be called if the <b>drag_proxy</b> option in <b>Control.Selection.load()</b> is set to true, and will insert <b>div#control_selection_drag_proxy</b> as a child of document.body.<% end %>
+	<% api_table 'Class' do |api| %>
+		<% api.item :returns => 'null', :signature => 'load([Hash options])', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'enable()', :description => 'Must be explicitly called.' %>
+		<% api.item :returns => 'null', :signature => 'disable()', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'recalculateLayout()', :description => 'Call when the page layout changes. Calculates dimensions and position of all selectable elements.' %>
+		<% api.item :returns => 'null', :signature => 'addSelectable(Element selectable [,object related [, mixed activation_targets [,function activation_target_callback]]])', :description => 'See <a href="#add_selectable">Control.Selection.addSelectable()</a>.' %>
+		<% api.item :returns => 'null', :signature => 'removeSelectable(Element selectable)', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'select(mixed selection)', :description => 'A single Element, or an array of Elements. Will destroy the existing selection.' %>
+		<% api.item :returns => 'null', :signature => 'deselect()', :description => '' %>
+		<% api.item :returns => 'bool', :signature => 'active', :description => '' %>
+		<% api.item :returns => 'array', :signature => 'elements', :description => 'Returns an array of all selectable elements that are currently selected.' %>
+		<% api.item :returns => 'array', :signature => 'objects', :description => 'See <a href="#related_objects">Accessing a Selectable\'s Related Object</a>' %>
+	<% end %>
+	<% section 'add_selectable' do %>
+		<% paragraph 'Control.Selection.addSelectable()' do %><b>related</b> is an object that will become available in the <b>Control.Selection.objects</b> array. <b>activation_targets</b> is an Element, or an array of Elements, all of which interact with the DragProxy. The simplest explanation is in the Windows Explorer/Finder column views. Each file/folder row is <b>selectable</b>, but you must click directly on the file or folder icon &amp; label (<b>activation_targets</b>) to drag the items.<% end %>
+	<% end %>
+	<% section 'related_objects' do %>
+		<% paragraph 'Accessing a Selectable\'s Related Object' do %>When using addSelectable() you can pass in an optional related object for each element (the original intent was to allow a controller object that relates to an element to be easily accessible without creating circular references). If you do not pass in a related object, the related object is still populated, but with a <b>null</b>. This way a given related object will have the same index as it's element in the <b>elements</b> and <b>objects</b> arrays.<% end %>
+		<% javascript do %>
+			Control.Selection.addSelectable(element_1,related_1);
+			Control.Selection.addSelectable(element_2,related_2);
+			Control.Selection.select(element_1);
+			Control.Selection.elements.each(function(element,i){
+				var related = Control.Selection.objects[i];
+			});
+		<% end %>
+	<% end %>
+	<% paragraph 'Class Options' do %>Class options are set once during <b>load()</b>, or can be set via <b>Control.Selection.options.option_name = value;</b><% end %>
+	<% options_table do |options| %>
+		<% options.item :type => 'string', :name => 'selection_id', :default => "'control_selection'", :description => 'id of the selection div.' %>
+		<% options.item :type => 'Hash', :name => 'selection_style', :default => "{zIndex: 999, cursor: 'default', border: '1px dotted #000'}", :description => 'Hash of styles to apply to the selection div.' %>
+		<% options.item :type => 'bool', :name => 'drag_proxy', :default => 'false', :description => '' %>
+		<% options.item :type => 'Hash', :name => 'drag_proxy_options', :default => '{}', :description => '' %>		
+	<% end %>
+	<% events_table 'Events' do |events| %>
+		<% events.item :signature => 'selected(Element selectable, mixed related)', :description => '' %>
+		<% events.item :signature => 'deselected(Element selectable, mixed related)', :description => '' %>
+		<% events.item :signature => 'change(array selectable_elements, array related_objects)', :description => 'Contains all currently selected elements/objects, does not contain the delta.' %>
+	<% end %>
+	<% api_table 'Control.Selection.DragProxy Class' do |api| %>
+		<% api.item :returns => 'bool', :signature => 'active', :description => '' %>
+	<% end %>
+	<% events_table 'Control.Selection.DragProxy Events' do |events| %>
+		<% events.item :signature => 'start(Element dragproxy_container,array selectable_elements)', :description => '' %>
+		<% events.item :signature => 'stop()', :description => '' %>
+	<% end %>
+<% end %>

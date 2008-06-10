@@ -1,0 +1,5 @@
+<ul id="subnavigation">
+	<li class="first<% if params[:extra] == 'cookie'%> active<% end %>"><%= link_to 'Cookie', extra_url(:extra => 'cookie') %></li>
+	<li<% if params[:extra] == 'event_behavior'%> class="active"<% end %>><%= link_to 'Event.Behavior', extra_url(:extra => 'event_behavior') %></li>
+	<li<% if params[:extra] == 'hotkey'%> class="active"<% end %>><%= link_to 'HotKey', extra_url(:extra => 'hotkey') %></li>
+</ul>

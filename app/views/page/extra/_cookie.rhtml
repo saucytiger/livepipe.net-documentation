@@ -1,0 +1,33 @@
+<%= header 'Cookie' %>
+<%= introduction 'Programmer friendly JavaScript cookie API.' %>
+<% tabs 'main_tabs' do |tabs| %>
+	<% tabs.tab 'tutorial', 'Tutorial' %>
+	<% tabs.tab 'api', 'API' %>
+	<% tabs.source 'http://github.com/saucytiger/livepipe-ui/tree/master/src/cookie.js' %>
+<% end %>
+<% section 'tutorial' do %>
+	<% paragraph do %>Cookie provides a more humane wrapper for reading and writing JavaScript cookies. All cookies set are relative to the current domain.<% end %>
+	<% javascript 'Example' do %>
+		Cookie.get('key'); //null
+		Cookie.set('key','value');
+		Cookie.get('key'); //'value'
+		Cookie.unset('key');
+		Cookie.get('key'); //null
+
+		Cookie.observe('get',function(key){
+			console.log('Attempting to read Cookie key: ' + key);
+		});
+	<% end %>
+<% end %>
+<% section 'api' do %>
+	<% api_table 'Class' do |api| %>
+		<% api.item :returns => 'null', :signature => 'set(string name, mixed value [,number seconds_to_expiry])', :description => '' %>
+		<% api.item :returns => 'mixed', :signature => 'get(string name)', :description => 'Returns null if the value was not found.' %>
+		<% api.item :returns => 'mixed', :signature => 'unset(string name)', :description => 'Returns null if the value was not found.' %>
+	<% end %>
+	<% events_table 'Events' do |events| %>
+		<% events.item :signature => 'set(string name, mixed value)', :description => '' %>
+		<% events.item :signature => 'get(string name)', :description => '' %>
+		<% events.item :signature => 'unset(string name)', :description => '' %>
+	<% end %>
+<% end %>

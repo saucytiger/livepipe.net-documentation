@@ -1,0 +1,197 @@
+<% object_event_js = capture do %>
+var rating_one = new Control.Rating('rating_one',{multiple:true});
+var rating_two = new Control.Rating('rating_two',{multiple:true});
+var rating_three = new Control.Rating('rating_three',{multiple:true});
+
+rating_three.observe('afterChange',function(new_value){
+	$('rating_three_result').update('have been rated ' + new_value);
+});
+
+var number_of_times_rated = 0;
+var total_container = $('rating_total');
+var times_container = $('rating_times');
+
+Control.Rating.observe('afterChange',function(rating_instance,new_value){
+	++number_of_times_rated;
+	times_container.update(number_of_times_rated + ' time' + (number_of_times_rated == 1 ? '' : 's'));
+	total_container.update(parseInt(total_container.innerHTML) + new_value);
+});
+<% end %>
+<% modal_example = capture do %>
+new Control.Modal('modal_test',{
+	className: 'modal',
+	beforeOpen: function(){
+		if(!$('modal_checkbox').checked)
+			throw $break;
+	}
+});
+<% end %>
+<% content_for :head do %>
+	<style>
+		table.ratings td {
+			font-size:11px;
+			color:#333;
+		}
+	
+		table.ratings {
+			margin-bottom:5px;
+		}
+
+		#control_overlay {
+			background-color:#000;
+			opacity: 0.5;
+			-moz-opacity: 0.5;
+			filter: alpha(opacity=50);
+		}
+		
+		.modal img {
+			background-color:#fff;
+			padding:2px;
+			border:1px solid #000;
+		}
+		
+		.rating_container {
+			clear:both;
+		}
+
+		.rating_container a {
+			float:left;
+			display:block;
+			width:25px;
+			height:25px;
+			border:0;
+			background-image:url("/stylesheets/rating.gif");
+		}
+
+		.rating_container a.rating_off {
+			background-position:0 0px;
+		}
+
+		.rating_container a.rating_half {
+			background-position:0 -25px;
+		}
+
+		.rating_container a.rating_on {
+			background-position:0 -50px;
+		}
+
+		.rating_container a.rating_selected {
+			background-position:0 -75px;
+		}
+	</style>
+	<script>
+		document.observe('dom:loaded',function(){
+			<%= object_event_js %>
+			<%= modal_example %>
+		});
+	</script>
+<% end %>
+
+<%= header 'Object.Event &amp; Extensions' %>
+<%= introduction 'Event based programming model and Prototype Event/Element extensions.' %>
+<% tabs 'main_tabs' do |tabs| %>
+	<% tabs.tab 'tutorial', 'Tutorial' %>
+	<% tabs.tab 'api', 'API' %>
+	<% tabs.tab 'extensions', 'Extensions' %>
+	<% tabs.source 'http://github.com/saucytiger/livepipe-ui/tree/master/src/livepipe.js' %>
+<% end %>
+
+<% section 'tutorial' do %>
+	<% paragraph do %>Object.Event is the core of LivePipe UI and is used by all classes. It allows you to create / <b>notify()</b> and <b>observe()</b> custom events on any object, which mimic the behavior of events in Element / Event. In addition to instance (object) observers, it introduces the concept of class observers, which observe all instances of a class.<% end %>
+	<h3>In Action</h3>
+	<p>You've clicked the ratings controls below <b id="rating_times">0 times</b>. These ratings have a total value of <b id="rating_total">0</b>.</p>
+	<table class="ratings" cellpadding="0" cellspacing="0">
+		<tr>
+			<td><div id="rating_one" class="rating_container"></div></td>
+			<td>I don't have an instance observer.</td>
+		</tr>
+		<tr>
+			<td><div id="rating_two" class="rating_container"></div></td>
+			<td>Neither do I!</td>
+		</tr>
+		<tr>
+			<td><div id="rating_three" class="rating_container"></div></td>
+			<td>But I have an instance observer, and I <b id="rating_three_result">haven't been rated yet</b>.</td>
+		</tr>
+	</table>
+	<% javascript do %><%= object_event_js %><% end %>
+
+	<p>The function registered via Control.Rating.observe() will be called whenever any rating's value changes. Note that <b>the instance that triggered the event is always prepended to the argument list when registering a class observer</b>. The function registered via rating_three.observe() will only be called when the third rating changes.</p>
+
+	<h3>When afterChange is fired...</h3>
+	<p>The diagram below shows what happened when a Control.Rating instance fires an afterChange event. Note that the function registered by observe() is called, not observe() itself.</p>
+
+	<div style="text-align:center;">
+		<img src="/stylesheets/object_event_diagram.jpg" style="margin:0 auto;"/>
+	</div>
+
+	<h3>Triggering Events &amp; $break</h3>
+	<p>All events are triggered via the <b>notify()</b> method. Any arguments passed into this function will be passed to all observers. This method will return an array of the collected return values from all observers. notify() is meant to be called inside of the class or object being observed (the instance is going to notify() observers when there is an event, you are not going to notify() the object of an event). To further clarify the matter, if JavaScript had private methods, notify() would be one.</p>
+
+	<p>When observing an event on a DOM object, Event.stop() is used to stop event execution / bubbling. Since there is no event object to stop, the <b>$break</b> variable can be thrown inside an event handler to accomplish the same thing. <b>If any event handler throws $break, the notify() method will return false instead of an array of collected return values</b>. Control.Modal has beforeOpen and beforeClose events that will look for this. If $break is thrown, the action will be prevented (in this case, open()).</p>
+	<p><a href="/stylesheets/sample_images/tabs_example_1_big.jpg" id="modal_test">Click to Open Modal</a> <input type="checkbox" id="modal_checkbox"/><span>Allow modal window to open?</span></p>
+	<% javascript do %><%= modal_example %><% end %>
+
+	<h3>Observers in Object.options</h3>
+	<p>If an object has an <b>options</b> property (every LivePipe UI object does) that contains a callable function with the same name as an event triggered with <b>notify()</b>, it will be treated just like an instance observer. So the falling code is equivalent.</p>
+	<% javascript do %>
+		var rating_one = new Control.Rating('rating_one',{
+		    afterChange: function(new_value){}	
+		});
+		
+		var rating_two = new Control.Rating('rating_two');
+		rating_two.observe('afterChange',function(new_value){});
+	<% end %>
+	
+	<% paragraph 'Utility Methods' do %><b>$proc()</b> and <b>$value()</b> are utility methods which are included in the livepipe.js file. They are used by various control scripts so that end users can specify many options as either scalar values (strings, numbers, booleans) or functions. If $proc() is given a function, it returns that function otherwise it returns a function that returns that value. If $value() is given a function, it calls that function returning the response, otherwise it acts as an <%= link_to 'Identity Function', 'http://en.wikipedia.org/wiki/Identity_function' %> (or Prototype.K()).<% end %>
+	<% javascript do %>
+		$proc(5) == function(){return 5;}
+		$proc(function(){return 5;}) == function(){return 5;}
+		
+		$value(5) == 5
+		$value(function(){return 5;}) == 5
+		
+		$value($proc(5)) == 5
+	<% end %>
+<% end %>
+
+<% section 'api' do %>
+	<% api_table 'Utility Methods' do |api| %>
+		<% api.item :returns => 'function', :signature => '$proc(mixed value)', :description => 'If value is a function returns value, otherwise returns function(){return value}.' %>
+		<% api.item :returns => 'mixed', :signature => '$value(mixed value)', :description => 'If value is a function, returns result of function call, otherwise returns value.' %>
+	<% end %>
+	<%= subhead 'Object.Event Class Methods' %>
+	<% paragraph do %>Object.Event has only one method, Object.Event.extend(), which gives the object, <b>and it's prototype</b> Object.Event methods.<% end %>
+	<% api_table do |api| %>
+		<% api.item :returns => 'null', :signature => 'extend(object)', :description => 'Extends the given object with Object.Event methods.' %>
+	<% end %>
+	
+	<%= subhead 'Object.Event Inherited Methods' %>
+	<% paragraph do %>The methods in this table become part of the object that you extend. By design notify() is to be implemented inside the class or object. You should not trigger notify() calls outside the class definition.<% end %>
+	<% api_table do |api| %>
+		<% api.item :returns => 'null', :signature => 'observe(string event_name, function observer)', :description => 'Register a given observer.' %>
+		<% api.item :returns => 'null', :signature => 'observeOnce(string event_name, function observer)', :description => 'Register a given observer, automatically removing it after the first time it is called.' %>
+		<% api.item :returns => 'null', :signature => 'stopObserving([string event_name [,function observer]])', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'notify(string event_name [,...args])', :description => 'Notify all observers of a given event. The return value will be false if the event was stopped with $break by any observers. Otherwise it will be an array of the responses including nulls.' %>
+	<% end %>
+<% end %>
+
+<% section 'extensions' do %>
+	<% paragraph 'Element.observeOnce()' do %>This works just like Element.observe(), but the observe will only be called once. It will then unregister itself via Element.stopObserving().<% end %>
+	<% javascript do %>
+		$('element').observeOnce('click',function(){
+			//after element is clicked once, this observer will be unregistered
+		});
+	<% end %>
+	<% paragraph 'mouseenter &amp; mouseleave Events' do %>Native implementation is used in IE. <%= link_to 'Control.Window', control_window_url %> (hoverbox/tooltips) and <%= link_to 'Control.Selection', control_selection_url %> (selection containment) are the only classes that depend on these events. The Prototype core team has stated they don't think these should be in the core. It is my recommendation that the Prototype core adopt these methods until the browser vendors decide to implement them. They can only be used with the Event/Element classes.<% end %>
+	<% javascript do %>
+		$('element').observe('mouseenter',function(){});
+		$('element').observe('mouseleave',function(){});
+	<% end %>
+	<% paragraph 'mouse:wheel Event' do %><%= link_to 'Control.ScrollBar', control_scrollbar_url %> is the only class that depends on this event.<% end %>
+	<% javascript do %>
+		$('element').observe('mouse:wheel',function(event){
+			event.memo.delta; //contains the wheel delta
+		});
+	<% end %>
+<% end %>

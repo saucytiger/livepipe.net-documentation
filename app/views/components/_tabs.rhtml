@@ -1,0 +1,15 @@
+<ul class="subsection_tabs" id="<%= tabs.id %>" style="clear:none;">
+<% if tabs.source %>
+	<li class="source_code"><a href="<%= tabs.source %>"><%= tabs.source.split('/').last %> source</a></li>
+<% end %>
+<% tabs.tabs.each do |tab| %>
+	<li class="tab"><a href="#<%= tab[:id] %>"><%= tab[:label] %></a></li>
+<% end %>
+</ul>
+<script>
+	document.observe('dom:loaded',function(){
+		new Control.Tabs('<%= tabs.id %>',{
+			linkSelector: 'li.tab a'
+		});
+	});
+</script>

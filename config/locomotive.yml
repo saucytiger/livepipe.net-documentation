@@ -1,0 +1,6 @@
+---
+mode: development
+runs_at_launch: 0
+identifier: LivePipe.net
+port: 3002
+bundle: /Applications/Locomotive2/Bundles/standardRailsMar2007.locobundle

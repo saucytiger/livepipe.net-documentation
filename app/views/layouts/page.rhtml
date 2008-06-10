@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title><%= @title || 'LivePipe&trade; : User Interface Components for Prototype' %></title>
+		<link rel="stylesheet" href="/stylesheets/screen.css"/>
+		<%= javascript_include_tag 'prototype' %>
+		
+		<%= javascript_include_tag 'effects' %>
+		<%= javascript_include_tag 'controls' %>
+		<%= javascript_include_tag 'dragdrop' %>
+		<%= javascript_include_tag 'slider' %>
+		
+		<%= javascript_include_tag 'resizable' %>
+		
+		<%= javascript_include_tag 'livepipe' %>
+		
+		<%= javascript_include_tag 'contextmenu' %>
+		<%= javascript_include_tag 'cookie' %>
+		<%= javascript_include_tag 'event_behavior' %>
+		<%= javascript_include_tag 'hotkey' %>
+		<%= javascript_include_tag 'pagination' %>
+		<%= javascript_include_tag 'progressbar' %>
+		<%= javascript_include_tag 'rating' %>
+		<%= javascript_include_tag 'scrollbar' %>
+		<%= javascript_include_tag 'selection' %>
+		<%= javascript_include_tag 'selectmultiple' %>
+		<%= javascript_include_tag 'tabs' %>
+		<%= javascript_include_tag 'textarea' %>
+		<%= javascript_include_tag 'window' %>
+		
+		<%= javascript_include_tag 'syntax' %>
+		
+		<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+		<script type="text/javascript">_uacct = "UA-176241-1"; urchinTracker();</script>
+		<%= yield :head %>
+	</head>
+	<body>
+		<%= yield :body %>
+		<div id="outer_container">
+			<div id="container">
+				<div id="header">
+					<h2><a href="<%= index_url %>"><span>LivePipe&trade; : User Interface Components for Prototype</span></a></h2>
+					<ul id="navigation">
+						<li<% if params[:action] == 'index' %> class="active"<% end %>><%= link_to 'Home', index_url %></li>
+						<li<% if params[:action] == 'core' %> class="active"<% end %>><%= link_to 'Core', core_url %></li>
+						<li<% if ['controls','control'].include? params[:action] %> class="active"<% end %>><%= link_to 'Controls', controls_url %></li>
+						<li<% if ['extras','extra'].include? params[:action] %> class="active"<% end %>><%= link_to 'Extras', extras_url %></li>
+						<li<% if params[:action] == 'download' %> class="active"<% end %>><%= link_to 'Download &amp; Contribute', download_url %></li>
+					</ul>
+				</div>
+				<div id="main">
+					<div id="main_container">
+						<%= yield %>
+						<%= yield :subnav %>
+						<%= sidebar = yield :sidebar; sidebar && sidebar != '' ? "<div id=\"sidebar\">#{sidebar}</div>" : "" %>
+						<% if flash[:message] || flash[:spam] %>
+							<p id="message"><%= flash[:message] || flash[:spam] %></p>
+						<% end %>
+					</div>
+				</div>
+				<div id="footer">
+					<p>Created by <a href="http://saucytiger.com/">Ryan Johnson</a> &copy; 2008 <a href="http://personalgrid.com/">PersonalGrid Corporation</a></p>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

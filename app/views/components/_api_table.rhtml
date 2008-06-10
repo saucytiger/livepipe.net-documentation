@@ -1,0 +1,10 @@
+<table cellpadding="0" cellspacing="0" width="100%" class="api_table">
+	<thead>
+		<tr><td><%= labels[0] || 'Return' %></td><td><%= labels[1] || 'Name' %></td><td class="description"><%= labels[2] || 'Description' %></td></tr>
+	</thead>
+	<tbody>
+		<% items.each do |item| %>
+			<tr class="<%= cycle('even','odd',:name => 'api') %>"><td class="type first"><%= item[labels[0] ? labels[0].downcase.to_sym : :returns] %></td><td class="signature"><b><%= item[labels[1] ? labels[1].downcase.to_sym : :signature] %></b></td><td class="last"><%= item[labels[2] ? labels[2].downcase.to_sym : :description] || '' %></td></tr>
+		<% end %>
+	</tbody>
+</table>

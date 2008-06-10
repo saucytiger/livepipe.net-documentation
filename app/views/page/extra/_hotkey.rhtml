@@ -1,0 +1,134 @@
+<% sample_hotkey_code = capture do %>
+new HotKey('a',function(event){
+	log('control + "a" pressed');
+});
+
+new HotKey('b',function(event){
+	log('control + shift + "b" pressed');
+},{
+	shiftKey: true
+});
+
+new HotKey('c',function(event){
+	log('control + shift + alt/option + "c" pressed');
+},{
+	shiftKey: true,
+	altKey: true
+});
+
+new HotKey('d',function(event){
+	log('"d" pressed');
+},{
+	ctrlKey: false
+});
+
+new HotKey('e',function(event){
+	log('control + "e" pressed inside of textarea');
+},{
+	element: $('containment_textarea')
+});
+
+//remote trigger
+$('remote_trigger').observe('click',function(event){
+	var value = $('remote_trigger_selector').value;
+	HotKey.hotkeys.find(function(hotkey){
+		//hotkey.letter will always be upper case
+		return hotkey.letter == value;
+	}).trigger();
+	event.stop();
+});
+<% end %>
+<% content_for :head do %>
+	<script>
+		document.observe('dom:loaded',function(){
+			//on page console
+			var console_element = $('text_console');
+			var log = function(text){
+				console_element.innerHTML += text + '\n';
+			};
+			$('console_clear').observe('click',function(event){
+				console_element.innerHTML = '';
+				event.stop();
+			});
+			<%= sample_hotkey_code %>
+		});
+	</script>
+	<style>
+		#text_console {
+			width:100%;
+			height:75px;
+		}
+		
+		#containment_textarea {
+			width:100%;
+			height:75px;
+		}
+		
+		#remote_trigger {
+			margin-right:5px;
+			margin-bottom:10px;
+		}
+	</style>
+<% end %>
+
+<%= header 'HotKey' %>
+<%= introduction 'Programmable keyboard shortcuts.' %>
+
+<% tabs 'main_tabs' do |tabs| %>
+	<% tabs.tab 'tutorial', 'Tutorial' %>
+	<% tabs.tab 'api', 'API' %>
+	<% tabs.source 'http://github.com/saucytiger/livepipe-ui/tree/master/src/hotkey.js' %>
+<% end %>
+
+<% section 'tutorial' do %>
+	<% paragraph do %>HotKey provides functionality similar to the accesskey attribute, but has many enhancements that allow for more granular control when creating keyboard driven interfaces.<% end %>
+	<% examples_table 'Active HotKeys on This Page','Letter','Options' do |examples| %>
+		<% examples.item :letter => 'control + a', :options => '{}' %>
+		<% examples.item :letter => 'control + shift + b', :options => '{shiftKey: true}' %>
+		<% examples.item :letter => 'control + shift + alt/option + c', :options => '{altKey: true, shiftKey: true}' %>
+		<% examples.item :letter => 'd - no modifiers', :options => '{ctrlKey: false}' %>
+		<% examples.item :letter => 'control + e', :options => '{element: $(\'containment_textarea\')}' %>
+	<% end %>
+	<%= subhead 'Console<span><a href="#" id="console_clear">clear</a></span>', :border => false %>
+	<textarea id="text_console" readonly="true"></textarea>
+	
+	<% paragraph 'Remote Triggers' do %>You can call the <b>trigger()</b> method on any HotKey instance to execute the callback. The callback will not receive an Event object in this case, as it would if it had been triggered by the keyboard.<% end %>
+	<input type="button" value="Trigger HotKey" id="remote_trigger"/>
+	<select id="remote_trigger_selector">
+		<option value="A">a</option>
+		<option value="B">b</option>
+		<option value="C">c</option>
+		<option value="D">d</option>
+		<option value="E">e</option>
+	</select>
+
+	<% paragraph 'HotKey Element Binding' do %>It is possible to apply the HotKey to a given element by passing the <b>element</b> option. If you bind all HotKeys to elements it is possible to register multiple keys with the same modifiers to different element.<% end %>
+	<textarea id="containment_textarea" readonly="true">The control + e hotkey will only be fired when this textarea has focus.</textarea>
+	
+	<% javascript 'Example' do %><%= sample_hotkey_code %><% end %>
+<% end %>
+
+<% section 'api' do %>
+	<% api_table 'Class' do |api| %>
+		<% api.item :returns => 'array', :signature => 'hotkeys', :description => '' %>
+	<% end %>
+	<% api_table 'Instance' do |api| %>
+		<% api.item :returns => 'HotKey', :signature => 'initialize(string letter, function callback [,Hash options])', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'trigger()', :description => 'Triggers callback, callback will not be passed an Event object.' %>
+		<% api.item :returns => 'null', :signature => 'enable()', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'disable()', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'destroy()', :description => 'Also calls disable()' %>
+		<% api.item :returns => 'string', :signature => 'letter', :description => 'Always in upper case.' %>
+		<% api.item :returns => 'Element', :signature => 'element', :description => 'Defaults to document.body' %>
+	<% end %>
+	<% options_table 'Options' do |options| %>
+		<% options.item :type => 'Element || false', :name => 'element', :default => 'false', :description => 'Attaches the hotkey to a given element instead of document.body' %>
+		<% options.item :type => 'bool', :name => 'shiftKey', :default => 'false', :description => '' %>
+		<% options.item :type => 'bool', :name => 'altKey', :default => 'false', :description => '' %>
+		<% options.item :type => 'bool', :name => 'ctrlKey', :default => 'true', :description => 'Defaults to true, emulating accesskey behavior.' %>
+	<% end %>
+	<% events_table 'Events' do |events| %>
+		<% events.item :signature => 'beforeCallback()', :description => 'Throwing $break will prevent the callback from being called.' %>
+		<% events.item :signature => 'afterCallback()', :description => '' %>
+	<% end %>
+<% end %>

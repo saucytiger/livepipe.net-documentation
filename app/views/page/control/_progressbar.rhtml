@@ -1,0 +1,91 @@
+<% progress_bar_css = capture do %>
+	#progress_bar {
+		width:102px;
+		height:7px;
+		border:1px solid #ccc;
+		padding:0;
+		margin:0;
+		position:relative;
+		background-image:url("/stylesheets/progress_bar.gif");
+		background-repeat:repeat-x;
+	}
+
+	#progress_bar div {
+		background-color:#fff;
+	}
+<% end %>
+<% progress_bar_html = capture do %>
+	<div id="progress_bar"></div>
+	<div style="margin-top:10px;">
+		<input type="button" value="Start" id="progress_bar_start"/>
+		<input type="button" value="Stop" id="progress_bar_stop"/>
+		<input type="button" value="Reset" id="progress_bar_reset"/>
+		<input type="button" value="+ 5%" id="progress_bar_step_5"/>
+		<input type="button" value="+ 25%" id="progress_bar_step_25"/>
+	</div>
+<% end %>
+<% progress_bar_js = capture do %>
+	var progress_bar = new Control.ProgressBar('progress_bar',{
+	    interval: 0.15
+	});
+	$('progress_bar_stop').observe('click',progress_bar.stop.bind(progress_bar));
+	$('progress_bar_start').observe('click',progress_bar.start.bind(progress_bar));
+	$('progress_bar_reset').observe('click',progress_bar.reset.bind(progress_bar));
+	$('progress_bar_step_5').observe('click',progress_bar.step.bind(progress_bar,5));
+	$('progress_bar_step_25').observe('click',progress_bar.step.bind(progress_bar,25));
+<% end %>
+<% content_for :head do %>
+	<style>
+		<%= progress_bar_css %>
+	</style>
+	<script>
+		document.observe('dom:loaded',function(){
+			<%= progress_bar_js %>
+		});
+	</script>
+<% end %>
+<%= header 'Control.ProgressBar' %>
+<%= introduction 'CSS based progress bar widget for Prototype.' %>
+
+<% tabs 'main_tabs' do |tabs| %>
+	<% tabs.tab 'tutorial', 'Tutorial' %>
+	<% tabs.tab 'api', 'API' %>
+	<% tabs.source 'http://github.com/saucytiger/livepipe-ui/tree/master/src/progressbar.js' %>
+<% end %>
+
+<% section 'tutorial' do %>
+	<% paragraph 'Introduction' do %>Control.ProgressBar is a percentage based progress bar that can be set to grow in one of three ways: on a timed interval, when events in your application tell it to, or it can be set to poll a given URL. The mechanism for action is simple, just create a div with relative or absolute positioning, attach the JavaScript, and this control will set the width of the inner element as necessary.<% end %>
+	<% paragraph 'Example' do %>The buttons below demonstrate one way of programatically controlling the progress bar.<% end %>
+	<%= progress_bar_html %>
+	<% html 'HTML' do %><%= encode_entities progress_bar_html %><% end %>
+	<% javascript 'JavaScript' do %><%= progress_bar_js %><% end %>
+	<% css 'CSS' do %><%= progress_bar_css %><% end %>
+	<% paragraph 'Style Notes' do %>The container (in this case #progress_bar) <b>must be absolutely or relatively positioned</b>. The inner div is automatically created for you, and should be assigned a background color or image (in this case white). Do not assign a position, height, width, margin, padding or border to the inner element.<% end %>
+<% end %>
+
+<% section 'api' do %>
+	<% api_table 'Instance' do |api| %>
+		<% api.item :returns => 'Control.ProgressBar', :signature => 'initialize(Element container [,Hash options])', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'setProgress(number value)', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'poll(string url [,number interval])', :description => 'Begin polling a given url at an interval (default 3000ms). URL should return an int between the 0 and 100 to set the progress percentage.' %>
+		<% api.item :returns => 'null', :signature => 'start()', :description => 'Start drawing the progress bar at the interval and step in the options hash.' %>
+		<% api.item :returns => 'null', :signature => 'stop()', :description => '' %>
+		<% api.item :returns => 'null', :signature => 'step(number value)', :description => 'Increment the progress bar by a given amount.' %>
+		<% api.item :returns => 'null', :signature => 'reset()', :description => 'Also calls stop()' %>
+		<% api.item :returns => 'Element', :signature => 'container', :description => '' %>
+		<% api.item :returns => 'number', :signature => 'progress', :description => '' %>
+		<% api.item :returns => 'bool', :signature => 'active', :description => '' %>
+	<% end %>
+	<% options_table 'Options' do |options| %>
+		<% options.item :type => 'function', :name => 'afterChange', :default => 'function(){}', :description => '' %>
+		<% options.item :type => 'number', :name => 'min', :default => '0', :description => 'Minimum width in pixels.' %>
+		<% options.item :type => 'number', :name => 'max', :default => '100', :description => 'Maximum width in pixels.' %>
+		<% options.item :type => 'number', :name => 'interval', :default => '0.25', :description => 'Default time in seconds between step() calls when start() is called.' %>
+		<% options.item :type => 'number', :name => 'step', :default => '1', :description => 'Default step amount when start() is called.' %>
+		<% options.item :type => 'Hash', :name => 'classNames', :default => '{active: \'progress_bar_active\', inactive: \'progress_bar_inactive\'}', :description => 'The class names that get added and removed from the container depending on state.' %>
+
+	<% end %>
+	<% events_table 'Events' do |events| %>
+		<% events.item :signature => 'afterChange(number progress, bool active)', :description => 'Called whenever the progress bar changes.' %>
+	<% end %>
+<% end %>

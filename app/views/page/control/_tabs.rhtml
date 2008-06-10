@@ -1,0 +1,250 @@
+<% example_1 = capture do %>
+	<!-- example 1 -->
+	<ul id="tabs_example_one" class="subsection_tabs">
+		<li class="tab"><a href="#one">One</a></li>
+		<li class="tab"><a href="#two">Two</a></li>
+	</ul>
+	<div id="one"><p>This is the simplest example of a set of tabs.</p></div>
+	<div id="two"><p>Note that the styling for the tabs is done with CSS, not the Control.Tabs script.</p></div>
+<% end %>
+
+<% example_2 = capture do %>
+	<!-- example 2 -->
+	<ul id="tabs_example_two" class="subsection_tabs">
+		<li class="tab"><a href="#a">One</a></li>
+		<li class="tab"><a href="#b">Two</a></li>
+		<li class="tab"><a href="#c">Three</a></li>
+		<li class="tab"><a href="#d">Four</a></li>
+	</ul>
+	<div id="a"><p>This example demonstrates scripting a Control.Tabs instance. Try clicking the links below, or changing the select box.</p></div>
+	<div id="b"><p>I am the second tab.</p></div>
+	<div id="c"><p>I am the third tab.</p></div>
+	<div id="d"><p>I am the fourth tab.</p></div>
+	<a href="" id="tabs_example_two_first" style="margin-right:10px;">&laquo;</a>
+	<a href="" id="tabs_example_two_previous" style="margin-right:10px;">&larr;</a>
+	<select id="tabs_example_two_select" style="margin-right:10px;">
+		<option value="a">One</option>
+		<option value="b">Two</option>
+		<option value="c">Three</option>
+		<option value="d">Four</option>
+	</select>
+	<a href="" id="tabs_example_two_next" style="margin-right:10px;">&rarr;</a>
+	<a href="" id="tabs_example_two_last">&raquo;</a>
+<% end %>
+
+<% example_3 = capture do %>
+	<!-- example 3 -->
+	<ul class="tabbed_images" id="tabs_example_three">
+		<li><a href="#image_1"><img src="/stylesheets/sample_images/tabs_example_1_small.jpg"/></a></li>
+		<li><a href="#image_2"><img src="/stylesheets/sample_images/tabs_example_2_small.jpg"/></a></li>
+		<li><a href="#image_3"><img src="/stylesheets/sample_images/tabs_example_3_small.jpg"/></a></li>
+		<li><a href="#image_4"><img src="/stylesheets/sample_images/tabs_example_4_small.jpg"/></a></li>
+	</ul>
+	<img src="/stylesheets/sample_images/tabs_example_1_big.jpg" id="image_1"/>
+	<img src="/stylesheets/sample_images/tabs_example_2_big.jpg" id="image_2"/>
+	<img src="/stylesheets/sample_images/tabs_example_3_big.jpg" id="image_3"/>
+	<img src="/stylesheets/sample_images/tabs_example_4_big.jpg" id="image_4"/>
+<% end %>
+
+<% tabs_js = capture do %>
+	//example 1
+	new Control.Tabs('tabs_example_one');
+	
+	//example 2
+	var tabs_example_two = new Control.Tabs('tabs_example_two',{
+		afterChange: function(new_container){
+			$A($('tabs_example_two_select').options).each(function(option,i){
+				if(option.value == new_container.id){
+					$('tabs_example_two_select').options.selectedIndex = i;
+					throw $break;
+				}
+			});
+		}
+	});
+	$('tabs_example_two_select').observe('change',function(){
+		tabs_example_two.setActiveTab($('tabs_example_two_select').value);
+	});
+	$('tabs_example_two_first').observe('click',function(event){
+		this.first();
+		Event.stop(event);
+	}.bindAsEventListener(tabs_example_two));
+	$('tabs_example_two_previous').observe('click',function(event){
+		this.previous();
+		Event.stop(event);
+	}.bindAsEventListener(tabs_example_two));
+	$('tabs_example_two_next').observe('click',function(event){
+		this.next();
+		Event.stop(event);
+	}.bindAsEventListener(tabs_example_two));
+	$('tabs_example_two_last').observe('click',function(event){
+		this.last();
+		Event.stop(event);
+	}.bindAsEventListener(tabs_example_two));
+	
+	//example 3
+	new Control.Tabs('tabs_example_three',{
+		hover: true
+	});
+<% end %>
+
+<% content_for :head do %>
+	<style>
+		.tabbed_images {
+			list-style:none;
+			margin:0;
+			padding:0;
+			clear:both;
+		}
+
+		.tabbed_images li {
+			list-style:none;
+			float:left;
+			margin:0;
+			padding:0;
+		}
+
+		.tabbed_images li a {
+			border:1px solid #ccc;
+			display:block;
+			float:left;
+			margin:0 10px 0 0;
+		}
+
+		.tabbed_images li a.active,
+		.tabbed_images li a:hover {
+			border:1px solid #333;
+		}
+
+		.tabbed_images li a img {
+			border:none;
+			padding:2px;
+			margin:0;
+			margin-bottom:-5px;
+		}
+
+		#image_1,
+		#image_2,
+		#image_3,
+		#image_4,
+		#image_5 {
+			margin-top:10px;
+			padding:2px;
+			border:1px solid #ccc;
+		}
+	</style>
+	<script>
+		document.observe('dom:loaded',function(){
+			<%= tabs_js %>
+		});
+	</script>
+<% end %>
+
+<%= header 'Control.Tabs' %>
+<%= introduction 'Unobtrusive CSS tabs for Prototype.' %>
+
+<% tabs 'main_tabs' do |tabs| %>
+	<% tabs.tab 'tutorial', 'Tutorial' %>
+	<% tabs.tab 'api', 'API' %>
+	<% tabs.source 'http://github.com/saucytiger/livepipe-ui/tree/master/src/tabs.js' %>
+<% end %>
+
+<% section 'tutorial' do %>
+	<% paragraph 'Introduction &amp; Examples' do %>Control.Tabs attaches creates a tabbed interface from an unordered list of links/anchors that point to any elements on your page that have an id attribute. Since it attaches these behaviors to HTML that already has semantic meaning, it will degrade gracefully for browsers that do not support JavaScript, and is search engine friendly. It attaches in one line of code for simple use cases, but is highly customizable and can be used in a variety of edge cases.<% end %>
+	<%= example_1 %>
+	<%= example_2 %>
+	<% paragraph do %>Control.Tabs is fully programmable, so in the example above the links are programmed to change which tab is active, and an event handler is registered to change the select box (and visa versa). The tabs can also be trigged via hovering, and need not even look like tabs. The example below use images instead of divs, and the "hover" option. See the <a href="#api">API section</a> for more details.<% end %>
+	<%= example_3 %>
+	<% html 'HTML' do %><%= encode_entities(example_1 + example_2 + example_3)%><% end %>
+	<% javascript 'JavaScript' do %><%= tabs_js %><% end %>
+	<p>Note that this example doesn't have an style information. If you want the CSS used on this page, view source to find the stylesheet, and then look for ".subsection_tabs"</p>
+	<h3>Creating Control.Tabs Instances by Class Name</h3>
+	<p>In the above example above the tab list has an id attribute. The constructor for control tabs can take any element object, or id string, so if you assigned each list a class of "tabs", you could do the following instead.</p>
+	<% javascript do %>
+		$$('.tabs').each(function(tab_group){
+			new Control.Tabs(tab_group);
+		});
+	<% end %>
+	<h3>Linking to Tabs from Other Pages</h3>
+	<p>If you need to have a tab pre selected, just link to it as you would any other page with an element id in it. For instance, open this url in a new window: <b>http://livepipe.net/control/tabs#api</b>. The API tab on this page will now be selected. If you need to have multiple tabs pre selected (i.e, if you have multiple tab sets on a page), separate their names with commas, try "#two,four" for instance. <b>This overrides the defaultTab option.</b></p>
+	<h3>Linking to Other Pages within a Tab Set</h3>
+	<p>If a link in a list of tabs does not begin with with "#" it will not be included in the tab list. This means you can mix and match on page tab links and external links as you please.</p>
+	<h3>Linking to a Tab on the Same Page Outside the Tab List</h3>
+	<p>By default, links pointing to a tab container outside of the list of tabs, will set the active tab. You can turn this off by specifying the option "autoLinkExternal" as false. For example the following link points to the API section of this page (HTML &lt;a href="#api"&gt;API&lt/a&gt;) : <a href="#api">API</a></p>
+	<h3>Flash of Unstyled Content Problem (FOUC)</h3>
+	<p>A common problem in larger pages is that the Control.Tabs script, Prototype.js, or other assets may take some time to load. While they are loading, The active tab will not be set. On this page for example, #tutorial starts as the active tab. If this page takes a long time to load, all three tabs will be shown. If we manually write in style="display:none;" onto the other two tabs, browsers without JavaScript will never see them. A not entirely endorsed (but perfectly functional) solution is to use document.write() to create style information that hides the other tabs. This <b>must be on the page</b> and not in a library or external file. This way non JavaScript browsers still see all the content, and the rest of us see the tabs as intended.</p>
+	<% javascript do %>
+		<%= encode_entities "document.write('<style>#api, #resources { display:none; }</style>');" %>
+	<% end %>
+	<% javascript 'More Usage Examples' do %>
+		//with no options
+		var tabs = new Control.Tabs($('my_list_of_tabs'));
+
+		//with all available options. these are the defaults
+		var tabs = new Control.Tabs($('my_list_of_tabs'),{
+			defaultTab: 'last',
+			linkSelector: 'li span a',
+			activeClassName: 'active_tab',
+			beforeChange: function(old_container){}
+		});
+
+		//to programatically set the active tab
+		tabs.setActiveTab($('link_object'));
+		//or by the link id
+		tabs.setActiveTab('one');
+
+		//or programatically set to these special cases
+		tabs.first(); //sets the first tab to active
+		tabs.last(); //sets the last tab to active
+		tabs.next(); //sets the next tab to active (unless last tab is already active)
+		tabs.previous(); //sets the previous tab to active (unless first tab is already active)
+
+		//this property has a reference to the container that is being displayed
+		var active_container = tabs.activeContainer;
+		active_container.update('some new HTML');
+
+		//this property has a reference to the active link
+		var active_link = tabs.activeLink;
+
+		Control.Tabs.instances.length; //should be 1
+		Control.Tabs.findByTabId('one').setActiveTab('two');
+
+		//using Object.Event
+		Control.Tabs.observe('beforeChange',function(control_tabs_instance,old_container,new_container){
+		    //this is called whenever any Control.Tabs instance changes
+		});
+		tabs.observe('beforeChange',function(old_container,new_container){
+		    //this is called whenever our "tabs" instance changes
+		});
+	<% end %>
+<% end %>
+
+<% section 'api' do %>
+	<% api_table 'Class' do |api| %>
+		<% api.item :returns => 'array', :signature => 'instances', :description => 'All created Control.Tabs instances.' %>
+		<% api.item :returns => 'object || false', :signature => 'findByTabId(string element_id)', :description => 'Find an instance by any container id that it contains.' %>
+	<% end %>
+	<% api_table 'Instance' do |api| %>
+		<% api.item :returns => 'Control.Tabs', :signature => 'initialize(Element container [,Hash options])', :description => 'Create a new instance by passing in a string id or Element object.' %>
+		<% api.item :returns => 'null', :signature => 'addTab(Element link)', :description => 'Add a link Element object to the list of tabs.' %>
+		<% api.item :returns => 'null', :signature => 'setActiveTab(Element link)', :description => 'Set the active tab by a link id string, or a link Element object.' %>
+		<% api.item :returns => 'null', :signature => 'next()', :description => 'Calls setActiveTab() on the next tab.' %>
+		<% api.item :returns => 'null', :signature => 'previous()', :description => 'Calls setActiveTab() on the previous tab.' %>
+		<% api.item :returns => 'null', :signature => 'first()', :description => 'Calls setActiveTab() on the first tab.' %>
+		<% api.item :returns => 'null', :signature => 'last()', :description => 'Calls setActiveTab() on the last tab.' %>
+		<% api.item :returns => 'Element', :signature => 'activeContainer', :description => 'Contains the currently active container element.' %>
+		<% api.item :returns => 'Element', :signature => 'activeLink', :description => 'Contains the currently active link element.' %>
+	<% end %>
+	<% options_table 'Options' do |options| %>
+		<% options.item :type => 'bool', :name => 'hover', :default => 'false', :description => 'Should the tabs change when the mouse hovers over a link instead of clicking.' %>
+		<% options.item :type => 'string || function', :name => 'linkSelector', :default => '\'li a\'', :description => 'CSS selector that matches a link inside the list of tabs.' %>
+		<% options.item :type => 'bool', :name => 'setClassOnContainer', :default => 'false', :description => 'Wether to set the activeClassName to the link, or it\'s parent element.' %>
+		<% options.item :type => 'string', :name => 'activeClassName', :default => '\'active\'', :description => 'The class name added to the active link.' %>
+		<% options.item :type => 'string', :name => 'defaultTab', :default => '\'first\'', :description => 'Which tabs starts as active. Can be \'first\', \'last\' or any link id string.' %>
+		<% options.item :type => 'bool', :name => 'autoLinkExternal', :default => 'true', :description => 'Wether to have links that point to containers in the tab list, but are outside of it, control the tabs instance.' %>
+		<% options.item :type => 'RegExp', :name => 'targetRegExp', :default => '/#(.+)$/', :description => 'The RegExp object that will be used to match link hrefs inside the list.' %>
+	<% end %>
+	<% events_table 'Events' do |events| %>
+		<% events.item :signature => 'beforeChange(Element old_container, Element new_container)', :description => 'Throwing $break will prevent the new tab from becoming active.' %>
+		<% events.item :signature => 'afterChange(Element new_container)', :description => '' %>
+	<% end %>
+<% end %>
