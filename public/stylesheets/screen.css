@@ -491,6 +491,27 @@ body {
 	color:#8B9F67;
 }
 
+#personal_grid {
+	display:block;
+	position:absolute;
+	top:145px;
+	right:30px;
+	border:0;
+	width:179px;
+	height:57px;
+	background-image:url("personal_grid.gif");
+}
+
+#personal_grid span {
+	display:none;
+}
+
+body.download #personal_grid,
+body.index #personal_grid,
+body.core #personal_grid {
+	top:115px;
+}
+
 /* Subsection Tabs
 --------------------*/
 #main ul.subsection_tabs {

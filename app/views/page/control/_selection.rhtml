@@ -1,3 +1,74 @@
+<% selection_css = capture do %>
+	#control_selection_drag_proxy {
+		background-color:#333;
+		color:#fff;
+		font-family:"Lucida Grande",Verdana;
+		font-weight:bold;
+		font-size:10px;
+		padding:10px 15px 10px 15px;
+		margin-left:-3px;
+		margin-top:-20px;
+		-moz-border-radius: 10px;
+		-webkit-border-radius: 10px;
+	}
+	
+	#selection_container {
+		width:100%;
+		height:300px;
+		background-color:#f7f7f7;
+		border:1px solid #aaa;
+		position:relative;
+	}
+	
+	#selection_container #files .file {
+		background-color:#ccc;
+	}
+	
+	#selection_container #files .file.selected {
+		background-color:#aaa;
+	}
+	
+	/*
+	file_doc.png
+	file_image.png
+	file_pdf.png
+	file_video.png
+	file_xls.png
+	folder.png
+	*/
+<% end %>
+
+<% selection_js = capture do %>
+/*
+	Control.Selection.load();
+	Control.Selection.enable();
+	$('selection_check').observe('change',function(){
+		Control.Selection[this.checked ? 'enable' : 'disable']();
+	});
+	Control.Selection.observe('selected',function(item){
+		item.addClassName('selected');
+	});
+	Control.Selection.observe('deselected',function(item){
+		item.removeClassName('selected');
+	});
+	$$('#selection_container #files .file').each(function(item){
+		Control.Selection.addSelectable(item);
+	});
+*/
+<% end %>
+
+<% content_for :head do %>
+	<style>
+		<%= selection_css %>
+	</style>
+	<script>
+		document.observe('dom:loaded',function(){
+			<%= selection_js %>
+		});
+	</script>
+<% end %>
+
+
 <%= header 'Control.Selection' %>
 <%= introduction 'Programmable object selection API for Prototype.' %>
 <% @title = 'Control.Selection : Programmable object selection API for Prototype' %>
@@ -9,7 +80,22 @@
 <% end %>
 
 <% section 'tutorial' do %>
-	
+	<p>Selection tutorial is coming soon.</p>
+	<!--
+	<h3><p style="border:none; padding:0; margin:0; float:right;"><input type="checkbox" id="selection_check" checked="true"/><span><b>Enable Control.Selection?</b></span></p>Example</h3>
+	<div id="selection_container">
+		<div id="files">
+			<div class="file"><div></div><span>a.jpg</span></div>
+			<div class="file"><div></div><span>b.jpg</span></div>
+			<div class="file"><div></div><span>c.jpg</span></div>
+			<div class="file"><div></div><span>d.jpg</span></div>
+			<div class="file"><div></div><span>e.jpg</span></div>
+		</div>
+		<div id="folders">
+			
+		</div>
+	</div>
+	-->
 <% end %>
 
 <% section 'api' do %>

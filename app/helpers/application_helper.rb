@@ -129,18 +129,20 @@ module ApplicationHelper
   end
   
   class Tabs
-    attr_reader :tabs, :id, :source
+    attr_reader :tabs, :id, :source, :li_id
     
     def initialize(id)
+      @li_id = li_id
       @id = id
       @tabs = []
       @source = nil
     end
     
-    def tab(id,label)
+    def tab(id,label,li_id = nil)
       @tabs.push({
         :id => id,
-        :label => label
+        :label => label,
+        :li_id => li_id
       })
     end
     

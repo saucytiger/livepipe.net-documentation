@@ -34,7 +34,7 @@
 		<script type="text/javascript">_uacct = "UA-176241-1"; urchinTracker();</script>
 		<%= yield :head %>
 	</head>
-	<body>
+	<body class="<%= params[:action] %>">
 		<%= yield :body %>
 		<div id="outer_container">
 			<div id="container">
@@ -50,6 +50,7 @@
 				</div>
 				<div id="main">
 					<div id="main_container">
+						<a href="http://personalgrid.com/" id="personal_grid"><span>Get 2GB of free storage at PersonalGrid</span></a>
 						<%= yield %>
 						<%= yield :subnav %>
 						<%= sidebar = yield :sidebar; sidebar && sidebar != '' ? "<div id=\"sidebar\">#{sidebar}</div>" : "" %>

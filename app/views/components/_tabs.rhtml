@@ -3,7 +3,7 @@
 	<li class="source_code"><a href="<%= tabs.source %>"><%= tabs.source.split('/').last %> source</a></li>
 <% end %>
 <% tabs.tabs.each do |tab| %>
-	<li class="tab"><a href="#<%= tab[:id] %>"><%= tab[:label] %></a></li>
+	<li class="tab"<% if tab[:li_id] %> id="<%= tab[:li_id] %>"<% end %>><a href="#<%= tab[:id] %>"><%= tab[:label] %></a></li>
 <% end %>
 </ul>
 <script>
