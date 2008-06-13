@@ -112,10 +112,10 @@
 			//on page console
 			var console_element = $('text_console');
 			var log = function(text){
-				console_element.innerHTML += text + '\n';
+				console_element.value = console_element.value + text + '\n';
 			};
 			$('console_clear').observe('click',function(event){
-				console_element.innerHTML = '';
+				console_element.value = '';
 				event.stop();
 			});
 			
@@ -167,7 +167,7 @@
 	<% end %>
 	<% api_table 'Instance' do |api| %>
 		<% api.item :returns => 'Control.ContextMenu', :signature => 'initialize(Element container [,Hash options])', :description => 'container is the element that the ContextMenu is attached to.' %>
-		<% api.item :returns => 'null', :signature => 'addItem(Hash item)', :description => 'See <a href="#item_hash">Item Hash</a> below.' %>
+		<% api.item :returns => 'Control.ContextMenu', :signature => 'addItem(Hash item)', :description => 'See <a href="#item_hash">Item Hash</a> below. Returns "this", for chaining.' %>
 		<% api.item :returns => 'bool', :signature => 'open(Event)', :description => 'To manually open the menu you must pass a mouse event.' %>
 		<% api.item :returns => 'bool', :signature => 'close([Event])', :description => '' %>
 		<% api.item :returns => 'null', :signature => 'destroy()', :description => '' %>

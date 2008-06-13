@@ -13,7 +13,7 @@ REDIRECTION_MAP = {
   'projects/prototype_tidbits' => '/extra',
   'projects/control_rating' => '/control/rating',
   'projects' => '/',
-  'community*' => '/',
+  'community*' => 'http://groups.google.com/group/livepipe-ui-users',
   'projects/event_behavior' => '/extra/event_behavior',
   'blog*' => 'http://saucytiger.com/journal'
 }
