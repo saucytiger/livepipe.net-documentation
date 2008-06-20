@@ -28,6 +28,15 @@ new HotKey('e',function(event){
 	element: $('containment_textarea')
 });
 
+//you can also register against any of the special keys
+//defined in prototype.js
+//up, down, left, right, esc, return, tab, etc
+new HotKey('down',function(event){
+	log('control + "down" pressed inside of textarea');
+},{
+	element: $('containment_textarea')
+});
+
 //remote trigger
 $('remote_trigger').observe('click',function(event){
 	var value = $('remote_trigger_selector').value;
@@ -88,7 +97,8 @@ $('remote_trigger').observe('click',function(event){
 		<% examples.item :letter => 'control + shift + b', :options => '{shiftKey: true}' %>
 		<% examples.item :letter => 'control + shift + alt/option + c', :options => '{altKey: true, shiftKey: true}' %>
 		<% examples.item :letter => 'd - no modifiers', :options => '{ctrlKey: false}' %>
-		<% examples.item :letter => 'control + e', :options => '{element: $(\'containment_textarea\')}' %>
+		<% examples.item :letter => 'control + e (if second textarea below has focus)', :options => '{element: $(\'containment_textarea\')}' %>
+		<% examples.item :letter => 'control + down (if second textarea below has focus)', :options => '{element: $(\'containment_textarea\')}' %>
 	<% end %>
 	<%= subhead 'Console<span><a href="#" id="console_clear">clear</a></span>', :border => false %>
 	<textarea id="text_console" readonly="true"></textarea>
@@ -104,7 +114,7 @@ $('remote_trigger').observe('click',function(event){
 	</select>
 
 	<% paragraph 'HotKey Element Binding' do %>It is possible to apply the HotKey to a given element by passing the <b>element</b> option. If you bind all HotKeys to elements it is possible to register multiple keys with the same modifiers to different element.<% end %>
-	<textarea id="containment_textarea" readonly="true">The control + e hotkey will only be fired when this textarea has focus.</textarea>
+	<textarea id="containment_textarea" readonly="true">The control + e and control + down hotkeys will only be fired when this textarea has focus.</textarea>
 	
 	<% javascript 'Example' do %><%= sample_hotkey_code %><% end %>
 <% end %>
