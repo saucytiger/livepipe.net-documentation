@@ -9,11 +9,11 @@ REDIRECTION_MAP = {
   'projects/control_progress_bar' => '/control/progressbar',
   'projects/control_select_multiple' => '/control/selectmultiple',
   'projects/object_event' => '/core',
-  'projects/picora*' => 'http://picora.org/',
+  'projects/picora*path' => 'http://picora.org/',
   'projects/prototype_tidbits' => '/extra',
   'projects/control_rating' => '/control/rating',
   'projects' => '/',
-  'community*' => 'http://groups.google.com/group/livepipe-ui-users',
+  'community*path' => 'http://groups.google.com/group/livepipe-ui-users',
   'projects/event_behavior' => '/extra/event_behavior',
   'blog*' => 'http://saucytiger.com/journal'
 }
