@@ -416,6 +416,8 @@ Control.Window = Class.create({
 			this.updateIFrameShimZIndex();
 	},
 	ensureInBounds: function(){
+		if(!this.isOpen)
+			return;
 		var viewport_dimensions = document.viewport.getDimensions();
 		var container_offset = this.container.cumulativeOffset();
 		var container_dimensions = this.container.getDimensions();
@@ -699,6 +701,7 @@ Control.Overlay = {
 		$(document.body).insert(Control.Overlay.container);
 		if(Prototype.Browser.IE){
 			Control.Overlay.container.setStyle(Control.Overlay.ieStyles);
+			Event.observe(window,'scroll',Control.Overlay.positionOverlay);
 			Event.observe(window,'resize',Control.Overlay.positionOverlay);
 			Control.Overlay.observe('beforeShow',Control.Overlay.positionOverlay);
 		}else
@@ -778,7 +781,8 @@ Control.Overlay = {
 		return true;
 	},
 	positionIFrameShim: function(){
-		Control.Overlay.iFrameShim.positionUnder(Control.Overlay.container);
+		if(Control.Overlay.container.visible())
+			Control.Overlay.iFrameShim.positionUnder(Control.Overlay.container);
 	},
 	//IE only
 	positionOverlay: function(){
