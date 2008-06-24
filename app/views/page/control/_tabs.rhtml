@@ -192,6 +192,8 @@
 		tabs.setActiveTab($('link_object'));
 		//or by the link id
 		tabs.setActiveTab('one');
+		//or by the order that the tabs were declared
+		tabs.setActiveTab(2);
 
 		//or programatically set to these special cases
 		tabs.first(); //sets the first tab to active
@@ -227,7 +229,7 @@
 	<% api_table 'Instance' do |api| %>
 		<% api.item :returns => 'Control.Tabs', :signature => 'initialize(Element container [,Hash options])', :description => 'Create a new instance by passing in a string id or Element object.' %>
 		<% api.item :returns => 'null', :signature => 'addTab(Element link)', :description => 'Add a link Element object to the list of tabs.' %>
-		<% api.item :returns => 'null', :signature => 'setActiveTab(Element link)', :description => 'Set the active tab by a link id string, or a link Element object.' %>
+		<% api.item :returns => 'null', :signature => 'setActiveTab(mixed link)', :description => 'Set the active tab by a link id string, a link Element object, or the index of tab.' %>
 		<% api.item :returns => 'null', :signature => 'next()', :description => 'Calls setActiveTab() on the next tab.' %>
 		<% api.item :returns => 'null', :signature => 'previous()', :description => 'Calls setActiveTab() on the previous tab.' %>
 		<% api.item :returns => 'null', :signature => 'first()', :description => 'Calls setActiveTab() on the first tab.' %>
