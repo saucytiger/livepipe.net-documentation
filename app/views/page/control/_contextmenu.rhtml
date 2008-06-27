@@ -26,7 +26,8 @@
 		label: 'Right Image, Item 2',
 		callback: function(){
 			log('Right Image, item two picked.');
-		}
+		},
+		enabled: false
 	});
 	context_menu_two.addItem({
 		label: function(){
@@ -53,7 +54,7 @@
 		list-style:none;
 		padding:0;
 		margin:0;
-		cursor:hand;
+		cursor:pointer;
 	}
 
 	#control_contextmenu ul li {
@@ -61,7 +62,6 @@
 		padding:3px 10px 3px 5px;
 		margin:0;
 		cursor:pointer;
-		cursor:hand;
 		font-family:"Lucida Grande",Verdana;
 		text-decoration:none;
 		color:#333;
@@ -77,13 +77,20 @@
 	#control_contextmenu ul li:hover {
 		color:#fff;
 		background-color:#3875d7;
-		cursor:hand;
+		cursor:pointer;
 	}
 
 	#control_contextmenu ul li.selected:hover {
 		color:#333;
 		background-color:#eee;
-		cursor:hand;
+		cursor:pointer;
+	}
+	
+	#control_contextmenu ul li.disabled,
+	#control_contextmenu ul li:hover.disabled {
+		background-color: #eee;
+		color:#999;
+		cursor:pointer;
 	}
 <% end %>
 
