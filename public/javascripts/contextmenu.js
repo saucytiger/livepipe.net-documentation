@@ -63,7 +63,11 @@ Control.ContextMenu = Class.create({
 			var item_container = $(document.createElement('li'));
 			item_container.update($value(item.label));
 			list.appendChild(item_container);
+			if(typeof(item.enabled) != "undefined")
+				item_container[$value(item.enabled) ? 'removeClassName' : 'addClassName']('disabled');
 			item_container.observe('mousedown',function(event,item){
+				if(typeof(item.enabled) != "undefined" && !$value(item.enabled))
+					return event.stop();
 				this.activated = $value(item.label);
 			}.bindAsEventListener(this,item));
 			item_container.observe('click',this.selectMenuItem.bindAsEventListener(this,item,item_container));

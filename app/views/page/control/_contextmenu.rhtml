@@ -147,7 +147,7 @@
 	<%= subhead 'Console<span><a href="#" id="console_clear">clear</a></span>', :border => false %>
 	<textarea id="text_console" readonly="true"></textarea>
 	
-	<% paragraph 'Adding Context: Conditional Menu Items &amp; Labels' do %>You can modify the contents of the <b>label</b> by passing a function that returns a string into the label option instead of string. This function will be called each time the menu is opened. An optional <b>condition</b> function option can be used as well. If this condition returns false, the menu item will not appear in the menu. If no items meet the condition checks, the menu will not open.<% end %>
+	<% paragraph 'Adding Context: Conditional Menu Items &amp; Labels' do %>You can modify the contents of the <b>label</b> by passing a function that returns a string into the label option instead of string. This function will be called each time the menu is opened. An optional <b>condition</b> function option can be used as well. If this condition returns false, the menu item will not appear in the menu. If no items meet the condition checks, the menu will not open. You can also pass an <b>enabled</b> parameter, that can be a boolean or a function that returns a boolean. If <b>enabled</b> returns false, a class name of "disabled" will be added to the menu item.<% end %>
 	
 	<% javascript 'JavaScript' do %><%= context_menu_js %><% end %>
 	
@@ -174,7 +174,8 @@
 	<% end %>
 	<% section 'item_hash' do %>
 		<% api_table 'Item Hash Structure','Type','Key','Description' do |api| %>
-			<% api.item :type => 'string', :key => 'label', :description => 'Text that will appear in the menu.' %>
+			<% api.item :type => 'bool', :key => 'enabled', :description => 'Wether the menu item is enabled. Defaults to true. Can be a function that returns bool.' %>
+			<% api.item :type => 'string', :key => 'label', :description => 'Text that will appear in the menu. Can be a function that returns a string.' %>
 			<% api.item :type => 'function', :key => 'callback', :description => 'Will be called when the menu item is selected.' %>
 			<% api.item :type => 'function', :key => 'condition', :description => 'Optional condition that will be called each time the menu is opened to see if the item will be included in the menu.' %>
 		<% end %>
